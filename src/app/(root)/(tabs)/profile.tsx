@@ -1,15 +1,22 @@
 import { Pressable, Text, View } from "react-native";
 import { useSession } from "@/contexts/AuthContext";
-import { router } from "expo-router";
+import { Redirect, router } from "expo-router";
+import { useEffect } from "react";
 
 export default function Profile() {
   const { signOut } = useSession()
 
   return (
     <View style={{ flex: 1, justifyContent: "center" }}>
-      <Pressable>
-        <Text onPress={signOut}>Sing Out</Text>
-      </Pressable>
+
+      <Text
+        onPress={() => {
+          router.navigate("/auth/sing-in")
+          signOut()
+        }}
+      >
+        Sair
+      </Text>
     </View>
   )
 }

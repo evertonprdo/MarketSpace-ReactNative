@@ -1,3 +1,4 @@
+import { router } from "expo-router";
 import { createContext, PropsWithChildren, useContext, useState } from "react";
 
 const AuthContext = createContext<{
@@ -24,17 +25,27 @@ export function useSession() {
 
 export function SessionProvider({ children }: PropsWithChildren) {
   const [isLoading, setIsLoading] = useState(false)
-  const [session, setSession] = useState<string | null>("xxx")
+
+  const [session, setSession] = useState<string | null>(null)
+
+  function signIn() {
+    setSession('xxx');
+
+    if (router.canDismiss()) {
+      router.dismissAll()
+    }
+    router.replace('/')
+  }
+
+  function signOut() {
+    setSession(null);
+  }
 
   return (
     <AuthContext.Provider
       value={{
-        signIn: () => {
-          setSession('xxx');
-        },
-        signOut: () => {
-          setSession(null);
-        },
+        signIn,
+        signOut,
         session,
         isLoading,
       }}>

@@ -18,7 +18,7 @@ export default function Home() {
         label="Selection"
         variant="checkbox"
         value={state}
-        onPress={() => router.push("/hsp24xl")}
+        onPress={() => setState(!state)}
       />
 
       <Checkable
@@ -54,8 +54,8 @@ export default function Home() {
       </Select>
 
       <View style={{ flexDirection: "row", width: "100%", gap: 8 }}>
-        <Card title="Tênis vermelho" price="59,90" isNewProduct={true} />
-        <Card title="Tênis vermelho" price="59,90" isNewProduct={false} isAdDisable/>
+        <Card title="Tênis vermelho" price="59,90" isNewProduct={true} onPress={() => router.push("/hsp24xl")} />
+        <Card title="Tênis vermelho" price="59,90" isNewProduct={false} isAdDisable />
       </View>
     </View>
   )

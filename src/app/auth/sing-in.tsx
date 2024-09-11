@@ -1,12 +1,10 @@
-import { useSession } from "@/contexts/AuthContext";
-import { router, useLocalSearchParams } from "expo-router";
+import { router } from "expo-router";
 import { Text, View } from "react-native";
 
-export default function SingIn() {
-  const { signIn } = useSession()
+import { useSession } from "@/contexts/AuthContext";
 
-  const { redirectUrl } = useLocalSearchParams()
-  console.log("Redi =>", redirectUrl)
+export default function SingIn() {
+  const { signIn } = useSession();
 
   return (
     <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -16,16 +14,7 @@ export default function SingIn() {
         Sing Up
       </Text>
 
-      <Text onPress={() => {
-
-        signIn()
-
-        if (redirectUrl) {
-          router.replace(redirectUrl as any)
-          return
-        }
-        router.replace("/")
-      }}>
+      <Text onPress={() => signIn()}>
         Sing In
       </Text>
     </View>
