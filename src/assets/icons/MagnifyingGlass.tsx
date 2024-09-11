@@ -5,7 +5,6 @@ const MagnifyingGlass = (props: SvgProps) => (
     width={32}
     height={32}
     viewBox="0 0 32 32"
-    fill="none"
     {...props}
   >
     <Path

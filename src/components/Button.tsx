@@ -1,5 +1,5 @@
 import { GestureResponderEvent, Pressable, PressableProps, StyleSheet, Text } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing, ReduceMotion } from "react-native-reanimated";
 import { SvgProps } from "react-native-svg";
 
 import Fonts from "@/constants/Fonts";
@@ -14,16 +14,23 @@ type Props = Omit<PressableProps, "children"> & {
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
-const animDuration = 100
+const animConfig = {
+  duration: 100,
+  easing: Easing.out(Easing.circle),
+}
 
 export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, ...props }: Props) {
   const isPressedIn = useSharedValue(false)
 
   const animatedStyle = useAnimatedStyle(() => ({
+    backgroundColor: isPressedIn.value
+      ? withTiming(variantStyles[variant].bgActive, animConfig)
+      : withTiming(variantStyles[variant].bg, animConfig),
+
     transform: [{
       scale: isPressedIn.value
-        ? withTiming(0.93, { duration: animDuration })
-        : withTiming(1, { duration: animDuration })
+        ? withTiming(0.93, animConfig)
+        : withTiming(1, animConfig)
     }]
   }))
 
@@ -41,7 +48,7 @@ export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, ...p
 
   return (
     <AnimatedPressable
-      style={[styles.container, { backgroundColor: variantStyles[variant].bg }, animatedStyle]}
+      style={[styles.container, animatedStyle]}
       onPressIn={handleOnPressIn}
       onPressOut={handleOnPressOut}
       {...props}
@@ -58,14 +65,17 @@ export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, ...p
 const variantStyles = {
   black: {
     bg: Colors.gray[100],
+    bgActive: Colors.gray[200],
     color: Colors.gray[700]
   },
   blue: {
     bg: Colors.blueLight,
+    bgActive: Colors.blue,
     color: Colors.gray[700]
   },
   gray: {
     bg: Colors.gray[500],
+    bgActive: Colors.gray[400],
     color: Colors.gray[200]
   },
 }

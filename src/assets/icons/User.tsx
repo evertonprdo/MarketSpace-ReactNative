@@ -4,7 +4,6 @@ const User = (props: SvgProps) => (
   <Svg
     width={32}
     height={32}
-    fill="#000000"
     viewBox="0 0 256 256"
     {...props}
   >

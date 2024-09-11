@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    
     gap: 8,
 
     backgroundColor: Colors.gray[700],
@@ -61,9 +61,12 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     borderWidth: 1,
   },
+
   input: {
     flex: 1,
 
+    paddingVertical: 12,
+    
     color: Colors.gray[200],
     fontFamily: Fonts.FontFamily.regular,
     fontSize: Fonts.FontSize.lg,
