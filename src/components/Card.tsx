@@ -1,4 +1,4 @@
-import { GestureResponderEvent, Image, Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
+import { Dimensions, GestureResponderEvent, Image, Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
 import CardPhoto from "@/assets/cardPhoto.png"
@@ -21,7 +21,7 @@ const animConfig = {
   easing: Easing.out(Easing.circle),
 }
 
-export function Card({ onPress, isNewProduct, isAdDisable, ...props }: Props) {
+export function Card({ onPress, isNewProduct, isAdDisable, style, ...props }: Props) {
   const scale = useSharedValue(1);
 
   const bgTagColor = isNewProduct
@@ -50,7 +50,7 @@ export function Card({ onPress, isNewProduct, isAdDisable, ...props }: Props) {
 
   return (
     <AnimatedPressable
-      style={[styles.container, animStyles]}
+      style={[styles.container, animStyles, style]}
       onPress={handleOnPress}
       {...props}
     >

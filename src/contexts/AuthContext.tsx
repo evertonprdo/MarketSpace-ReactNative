@@ -24,9 +24,8 @@ export function useSession() {
 }
 
 export function SessionProvider({ children }: PropsWithChildren) {
+  const [session, setSession] = useState<string | null>('xxx')
   const [isLoading, setIsLoading] = useState(false)
-
-  const [session, setSession] = useState<string | null>(null)
 
   function signIn() {
     setSession('xxx');

@@ -92,6 +92,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: Fonts.FontFamily.bold,
-    fontSize: Fonts.FontSize.md
+    fontSize: Fonts.FontSize.md,
   }
 })
