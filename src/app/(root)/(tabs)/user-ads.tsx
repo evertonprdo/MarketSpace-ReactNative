@@ -1,24 +1,17 @@
-import { FlatList, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { router } from "expo-router";
+import { StyleSheet, Text, View } from "react-native";
 
 import Plus from "@/assets/icons/Plus";
 
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
-import { Card } from "@/components/Card";
 import { Select } from "@/components/Select";
 import { PressableIcon } from "@/components/PressableIcon";
 import { Header } from "@/components/Header";
-import { router } from "expo-router";
-
-const screenPadding = 24
-const listColumnGap = 20
+import { List } from "@/components/List";
 
 export default function UserAds() {
-  const WindowDimension = useWindowDimensions();
-
-  const cardMaxWidth = (WindowDimension.width / 2) - screenPadding - (listColumnGap / 2)
-
   return (
     <View style={styles.container}>
       <Header
@@ -44,15 +37,9 @@ export default function UserAds() {
         </Select>
       </View>
 
-      <FlatList
-        key={1}
-        data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
-        keyExtractor={item => String(item)}
-        renderItem={() => <Card title="Tênis vermelho" price="59,90" isNewProduct style={{ maxWidth: cardMaxWidth }} />}
-        numColumns={2}
-        columnWrapperStyle={{ gap: listColumnGap }}
-        contentContainerStyle={{ gap: 24, paddingBottom: 120 }}
-        showsVerticalScrollIndicator={false}
+      <List
+        data={[0, 1, 2, 3, 4, 5, 6]}
+        onPressCard={(id) => router.navigate(`/user-ad/${id}`)}
       />
     </View>
   )
@@ -61,7 +48,7 @@ export default function UserAds() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: screenPadding
+    paddingHorizontal: 24
   },
 
   header: {

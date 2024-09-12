@@ -1,14 +1,14 @@
 import { GestureResponderEvent, Pressable, PressableProps, StyleSheet, Text } from "react-native";
-import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing, ReduceMotion } from "react-native-reanimated";
+import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import { SvgProps } from "react-native-svg";
 
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-type Variants = keyof typeof variantStyles
+export type BtnVariants = keyof typeof variantStyles
 
 type Props = Omit<PressableProps, "children"> & {
-  variant: Variants
+  variant: BtnVariants
   title: string
   icon?: (props: SvgProps) => React.JSX.Element
 }
@@ -19,7 +19,7 @@ const animConfig = {
   easing: Easing.out(Easing.circle),
 }
 
-export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, ...props }: Props) {
+export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, style, ...props }: Props) {
   const isPressedIn = useSharedValue(false)
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -48,7 +48,7 @@ export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, ...p
 
   return (
     <AnimatedPressable
-      style={[styles.container, animatedStyle]}
+      style={[styles.container, animatedStyle, style]}
       onPressIn={handleOnPressIn}
       onPressOut={handleOnPressOut}
       {...props}

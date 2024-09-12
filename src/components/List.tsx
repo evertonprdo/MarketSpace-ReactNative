@@ -1,22 +1,30 @@
-import { FlatList, useWindowDimensions } from "react-native";
+import { FlatList, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
 import { Card } from "@/components/Card";
 
 type Props = {
-  ListHeaderComponent?: React.ReactElement<any>
+  data: ArrayLike<number>
+  ListHeaderComponent?: () => React.JSX.Element
+  style?: StyleProp<ViewStyle>
+  onPressCard?: (id: string) => void
 }
 
 const screenPadding = 24
 const listColumnGap = 20
 
-export function List({ ListHeaderComponent }: Props) {
+export function List({ ListHeaderComponent, style, data, onPressCard }: Props) {
   const WindowDimension = useWindowDimensions();
 
   const cardMaxWidth = (WindowDimension.width / 2) - screenPadding - (listColumnGap / 2)
 
+  function handleOnPressCard() {
+    if (onPressCard) {
+      onPressCard("uuid-Xy7as")
+    }
+  }
+
   return (
     <FlatList
-      key={1}
-      data={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+      data={data}
       keyExtractor={item => String(item)}
       ListHeaderComponent={ListHeaderComponent}
       renderItem={() => (
@@ -25,12 +33,22 @@ export function List({ ListHeaderComponent }: Props) {
           price="59,90"
           isNewProduct
           style={{ maxWidth: cardMaxWidth }}
+          onPress={handleOnPressCard}
         />
       )}
       numColumns={2}
-      columnWrapperStyle={{ gap: listColumnGap }}
-      contentContainerStyle={{ gap: 24, paddingBottom: 120 }}
+      columnWrapperStyle={styles.columnWrapper}
+      contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
+      style={style}
     />
   )
 }
+
+const styles = StyleSheet.create({
+  columnWrapper: { gap: listColumnGap },
+  contentContainer: {
+    gap: 24,
+    paddingBottom: 120
+  }
+})

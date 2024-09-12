@@ -132,8 +132,8 @@ function Option({ name, children }: OptionProps) {
       : withTiming(0, animConfig),
 
     backgroundColor: isPressedIn.value
-      ? Colors.gray[500]
-      : "transparent"
+      ? withTiming(Colors.gray[500], animConfig)
+      : withTiming("transparent", animConfig)
   }))
 
   return (

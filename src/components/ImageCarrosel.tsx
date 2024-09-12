@@ -28,12 +28,12 @@ export function ImageCarrosel({ imagesUri, disabledAd, ...props }: ProductCarros
             resizeMode="cover"
           />
         )}
+        showsHorizontalScrollIndicator={false}
         onViewableItemsChanged={({ viewableItems }) => {
           setCurrentView(viewableItems[0].key.toString())
         }}
         pagingEnabled
         horizontal
-        showsHorizontalScrollIndicator={false}
       />
 
       <View style={styles.slider}>
