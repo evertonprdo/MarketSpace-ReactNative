@@ -7,9 +7,10 @@ import Fonts from "@/constants/Fonts";
 
 type Props = Omit<TextInputProps, "children"> & {
   children?: React.ReactNode
+  childDisplacement?: 'left' | 'right'
 }
 
-export const Input = forwardRef<TextInput, Props>(({ children, onFocus, onBlur, ...props }, ref) => {
+export const Input = forwardRef<TextInput, Props>(({ children, childDisplacement = 'right', onFocus, onBlur, ...props }, ref) => {
   const isOnFocus = useSharedValue(false)
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -21,17 +22,18 @@ export const Input = forwardRef<TextInput, Props>(({ children, onFocus, onBlur, 
   function handleOnFocus(e: NativeSyntheticEvent<TextInputFocusEventData>) {
     isOnFocus.value = true
 
-    if(onFocus) onFocus(e)
+    if (onFocus) onFocus(e)
   }
 
   function handleOnBlur(e: NativeSyntheticEvent<TextInputFocusEventData>) {
     isOnFocus.value = false
 
-    if(onBlur) onBlur(e)
+    if (onBlur) onBlur(e)
   }
 
   return (
     <Animated.View style={[styles.container, animatedStyle]}>
+      {childDisplacement === 'left' && children}
       <TextInput
         ref={ref}
         style={styles.input}
@@ -42,7 +44,7 @@ export const Input = forwardRef<TextInput, Props>(({ children, onFocus, onBlur, 
         onBlur={handleOnBlur}
         {...props}
       />
-      {children}
+      {childDisplacement === 'right' && children}
     </Animated.View>
   )
 })
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
 
     paddingHorizontal: 16,
-    
+
     gap: 8,
 
     backgroundColor: Colors.gray[700],
@@ -66,7 +68,7 @@ const styles = StyleSheet.create({
     flex: 1,
 
     paddingVertical: 12,
-    
+
     color: Colors.gray[200],
     fontFamily: Fonts.FontFamily.regular,
     fontSize: Fonts.FontSize.lg,

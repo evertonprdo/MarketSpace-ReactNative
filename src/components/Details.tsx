@@ -1,5 +1,4 @@
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
-import { ImageCarrosel } from "./ImageCarrosel";
 
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
@@ -11,6 +10,8 @@ import Money from "@/assets/icons/Money";
 import Bank from "@/assets/icons/Bank";
 
 import ImageProfile from "@/assets/profilePhoto.jpeg"
+
+import { Carrosel } from "@/components/Carrosel";
 
 type Props = {
   children?: React.ReactNode
@@ -37,7 +38,7 @@ export function Details({ children, tempProp }: Props) {
       style={styles.content}
       showsVerticalScrollIndicator={false}
     >
-      <ImageCarrosel
+      <Carrosel
         imagesUri={testArray}
         disabledAd={tempProp}
       />

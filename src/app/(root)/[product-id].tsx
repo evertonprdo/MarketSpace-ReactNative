@@ -8,8 +8,8 @@ import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
 import { Header } from "@/components/Header";
-import { PressableIcon } from "@/components/PressableIcon";
-import { Button } from "@/components/Button";
+import { PressableIcon } from "@/components/base/PressableIcon";
+import { Button } from "@/components/base/Button";
 import { Details } from "@/components/Details";
 
 export default function AdDetails() {

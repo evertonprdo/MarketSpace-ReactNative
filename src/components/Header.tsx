@@ -1,8 +1,7 @@
 import { StyleSheet, Text, View, ViewProps } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { PressableIcon } from "./PressableIcon";
+
 import Colors from "@/constants/Color";
-import { SvgProps } from "react-native-svg";
 import Fonts from "@/constants/Fonts";
 
 type IconProps = {

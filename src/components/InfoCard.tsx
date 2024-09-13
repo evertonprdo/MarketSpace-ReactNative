@@ -1,26 +1,63 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { GestureResponderEvent, Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
+import Animated, { Easing, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
 import ArrowRight from "@/assets/icons/ArrowRight";
 import TagRegular from "@/assets/icons/TagRegular";
+
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-export function InfoCard() {
+type Props = PressableProps & {
+  count: number
+}
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
+const animConfig = {
+  duration: 128,
+  easing: Easing.out(Easing.poly(4)),
+}
+
+export function InfoCard({ count, onPress, ...props }: Props) {
+  const scale = useSharedValue(1)
+
+  function handleOnPress(event: GestureResponderEvent) {
+    scale.value = withSequence(
+      withTiming(0.93, animConfig),
+      withTiming(1),
+    )
+
+    if (onPress) setTimeout(() => onPress(event), 100)
+  }
+
   return (
     <View style={styles.info}>
       <View style={styles.infoActive}>
         <TagRegular height={22} width={22} fill={Colors.blue} />
 
         <View>
-          <Text style={styles.counterTitle}>4</Text>
-          <Text style={styles.counterText}>anúncios ativos</Text>
+          <Text style={styles.counterTitle}>
+            {count}
+          </Text>
+
+          <Text style={styles.counterText}>
+            anúncios ativos
+          </Text>
         </View>
+
       </View>
 
-      <Pressable style={styles.link}>
-        <Text style={styles.linkText}>Meus anúncios</Text>
+      <AnimatedPressable
+        style={[styles.link, { transform: [{ scale }] }]}
+        onPress={handleOnPress}
+        hitSlop={8}
+        {...props}
+      >
+        <Animated.Text style={styles.linkText}>
+          Meus anúncios
+        </Animated.Text>
+
         <ArrowRight height={22} width={22} fill={Colors.blue} />
-      </Pressable>
+      </AnimatedPressable>
     </View>
   )
 }

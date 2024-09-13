@@ -1,5 +1,6 @@
 import { FlatList, StyleProp, StyleSheet, useWindowDimensions, ViewStyle } from "react-native";
-import { Card } from "@/components/Card";
+
+import { AdCard } from "@/components/AdCard";
 
 type Props = {
   data: ArrayLike<number>
@@ -28,7 +29,7 @@ export function List({ ListHeaderComponent, style, data, onPressCard }: Props) {
       keyExtractor={item => String(item)}
       ListHeaderComponent={ListHeaderComponent}
       renderItem={() => (
-        <Card
+        <AdCard
           title="Tênis vermelho"
           price="59,90"
           isNewProduct

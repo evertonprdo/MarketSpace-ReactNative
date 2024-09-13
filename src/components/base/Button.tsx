@@ -13,10 +13,28 @@ type Props = Omit<PressableProps, "children"> & {
   icon?: (props: SvgProps) => React.JSX.Element
 }
 
+const variantStyles = {
+  black: {
+    bg: Colors.gray[100],
+    bgActive: Colors.gray[200],
+    color: Colors.gray[700]
+  },
+  blue: {
+    bg: Colors.blueLight,
+    bgActive: Colors.blue,
+    color: Colors.gray[700]
+  },
+  gray: {
+    bg: Colors.gray[500],
+    bgActive: Colors.gray[400],
+    color: Colors.gray[200]
+  },
+}
+
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 const animConfig = {
   duration: 100,
-  easing: Easing.out(Easing.circle),
+  easing: Easing.out(Easing.poly(4)),
 }
 
 export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, style, ...props }: Props) {
@@ -60,24 +78,6 @@ export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, styl
       </Text>
     </AnimatedPressable>
   )
-}
-
-const variantStyles = {
-  black: {
-    bg: Colors.gray[100],
-    bgActive: Colors.gray[200],
-    color: Colors.gray[700]
-  },
-  blue: {
-    bg: Colors.blueLight,
-    bgActive: Colors.blue,
-    color: Colors.gray[700]
-  },
-  gray: {
-    bg: Colors.gray[500],
-    bgActive: Colors.gray[400],
-    color: Colors.gray[200]
-  },
 }
 
 const styles = StyleSheet.create({

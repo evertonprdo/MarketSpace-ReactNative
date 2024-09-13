@@ -1,7 +1,9 @@
+import { StyleSheet, Text, View } from "react-native"
+
 import Colors from "@/constants/Color"
 import Fonts from "@/constants/Fonts"
-import { StyleSheet, Text, View } from "react-native"
-import { BtnVariants, Button } from "./Button"
+
+import { BtnVariants, Button } from "@/components/base/Button"
 
 type Props = {
   title: string

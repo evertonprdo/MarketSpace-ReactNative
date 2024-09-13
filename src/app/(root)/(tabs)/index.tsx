@@ -9,7 +9,7 @@ import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
 import { Search } from "@/components/Search";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/base/Button";
 import { List } from "@/components/List";
 import { InfoCard } from "@/components/InfoCard";
 
@@ -48,7 +48,7 @@ export default function Home() {
               Seus produtos anunciados para venda
             </Text>
 
-            <InfoCard />
+            <InfoCard count={4} onPress={() => router.navigate('/user-ads')}/>
           </View>
 
           <View style={styles.section}>

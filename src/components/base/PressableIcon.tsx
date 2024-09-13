@@ -13,7 +13,7 @@ type Props = PressableProps & {
 const hitSlup = 6
 const animConfig = {
   duration: 128,
-  easing: Easing.out(Easing.circle)
+  easing: Easing.out(Easing.poly(4)),
 }
 
 export function PressableIcon({ icon: Icon, fill = 'none', stroke = 'none', size, onPressIn, onPressOut, ...props }: Props) {

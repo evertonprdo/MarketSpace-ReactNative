@@ -1,7 +1,7 @@
 import { View } from "react-native";
 
 import { useSession } from "@/contexts/AuthContext";
-import { Button } from "@/components/Button";
+import { Button } from "@/components/base/Button";
 
 export default function SingOut() {
   const { signOut } = useSession()

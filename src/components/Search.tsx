@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { SlideInDown } from "react-native-reanimated";
 
@@ -8,14 +9,13 @@ import X from "@/assets/icons/X";
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-import { Input } from "@/components/Input";
-import { PressableIcon } from "@/components/PressableIcon";
-import { Modal } from "./Modal";
-import { useState } from "react";
-import { Button } from "./Button";
-import { Tag } from "./Tag";
-import { Toggle } from "./Toggle";
-import { Checkable } from "./Checkable";
+import { Input } from "@/components/base/Input";
+import { PressableIcon } from "@/components/base/PressableIcon";
+import { Modal } from "@/components/base/Modal";
+import { Button } from "@/components/base/Button";
+import { Tag } from "@/components/base/Tag";
+import { Toggle } from "@/components/base/Toggle";
+import { Checkable } from "@/components/base/Checkable";
 
 export function Search() {
   const [showModal, setShowModal] = useState(false)

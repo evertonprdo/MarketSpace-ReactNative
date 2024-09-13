@@ -6,8 +6,8 @@ import Plus from "@/assets/icons/Plus";
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
-import { Select } from "@/components/Select";
-import { PressableIcon } from "@/components/PressableIcon";
+import { Select } from "@/components/base/Select";
+import { PressableIcon } from "@/components/base/PressableIcon";
 import { Header } from "@/components/Header";
 import { List } from "@/components/List";
 
