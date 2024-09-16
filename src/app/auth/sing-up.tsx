@@ -9,7 +9,7 @@ import Colors from "@/constants/Color";
 
 import { Input } from "@/components/base/Input";
 import { Button } from "@/components/base/Button";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePicker, ImagePickerImgProps } from "@/components/ImagePicker";
 import { PasswordButton } from "@/components/PasswordButton";
 
 import { useSession } from "@/contexts/AuthContext";
@@ -17,7 +17,11 @@ import { router } from "expo-router";
 
 export default function SingUp() {
   const { signIn } = useSession()
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
+
+  const [image, setImage] = useState<ImagePickerImgProps | null>(null)
+  const [form, setForm] = useState()
 
   return (
     <ScrollView
@@ -38,7 +42,11 @@ export default function SingUp() {
 
       <View style={styles.body}>
         <View style={styles.section}>
-          <ImagePicker style={styles.selfCenter} />
+          <ImagePicker
+            image={image}
+            onImageChange={setImage}
+            style={styles.selfCenter}
+          />
 
           <Input placeholder="Nome" />
           <Input placeholder="E-mail" />
@@ -46,21 +54,21 @@ export default function SingUp() {
 
           <Input
             placeholder="Senha"
-            secureTextEntry={isPasswordVisible}
+            secureTextEntry={secureTextEntry}
           >
             <PasswordButton
-              isPasswordVisible={isPasswordVisible}
-              onPasswordVisibleChange={setIsPasswordVisible}
+              secureTextEntry={secureTextEntry}
+              onSecureTextEntryChange={setSecureTextEntry}
             />
           </Input>
 
           <Input
             placeholder="Confirmar senha"
-            secureTextEntry={isPasswordVisible}
+            secureTextEntry={secureTextEntry}
           >
             <PasswordButton
-              isPasswordVisible={isPasswordVisible}
-              onPasswordVisibleChange={setIsPasswordVisible}
+              secureTextEntry={secureTextEntry}
+              onSecureTextEntryChange={setSecureTextEntry}
             />
           </Input>
 

@@ -19,7 +19,7 @@ export default function SingIn() {
   const { signIn } = useSession();
   const { height: WindowHeight } = useWindowDimensions();
 
-  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
+  const [secureTextEntry, setSecureTextEntry] = useState(true);
 
   return (
     <SafeAreaView style={[styles.container, { height: WindowHeight }]}>
@@ -49,11 +49,11 @@ export default function SingIn() {
                 />
                 <Input
                   placeholder="Senha"
-                  secureTextEntry={isPasswordVisible}
+                  secureTextEntry={secureTextEntry}
                 >
                   <PasswordButton
-                    isPasswordVisible={isPasswordVisible}
-                    onPasswordVisibleChange={setIsPasswordVisible}
+                    secureTextEntry={secureTextEntry}
+                    onSecureTextEntryChange={setSecureTextEntry}
                   />
                 </Input>
               </View>

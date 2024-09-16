@@ -1,0 +1,1 @@
+The app will be connected to the backend: https://github.com/rocketseat-education/ignite-rn-2022-challenge-marketspace-api

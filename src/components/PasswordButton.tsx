@@ -6,17 +6,17 @@ import Colors from "@/constants/Color"
 import { PressableIcon } from "@/components/base/PressableIcon"
 
 type Props = {
-  isPasswordVisible: boolean
-  onPasswordVisibleChange: (val: boolean) => void
+  secureTextEntry: boolean
+  onSecureTextEntryChange: (val: boolean) => void
 }
 
-export function PasswordButton({ isPasswordVisible, onPasswordVisibleChange }: Props) {
+export function PasswordButton({ secureTextEntry, onSecureTextEntryChange }: Props) {
   return (
     <PressableIcon
-      icon={isPasswordVisible ? Eye : EyeClosed}
+      icon={secureTextEntry ? Eye : EyeClosed}
       size={20}
       fill={Colors.gray[300]}
-      onPress={() => onPasswordVisibleChange(!isPasswordVisible)}
+      onPress={() => onSecureTextEntryChange(!secureTextEntry)}
     />
   )
 }

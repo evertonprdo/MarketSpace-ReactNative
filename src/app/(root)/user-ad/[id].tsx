@@ -51,7 +51,7 @@ export default function UserAdDetails() {
           {isDisabled ? (
             <Button
               key={'btnBlue'}
-              title={'Desativar anúncio'}
+              title={'Reativar anúncio'}
               variant={'blue'}
               icon={Power}
               onPress={() => setShowModal(true)}
@@ -59,7 +59,7 @@ export default function UserAdDetails() {
           ) : (
             <Button
               key={'btnGray'}
-              title={'Reativar anúncio'}
+              title={'Desativar anúncio'}
               variant={'black'}
               icon={Power}
               onPress={() => setShowModal(true)}
