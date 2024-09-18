@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -10,16 +9,18 @@ import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
 import { Button } from "@/components/base/Button";
-import { Input } from "@/components/base/Input";
+import { FormSignIn, FormSignInProps } from "@/components/Form/SignIn";
 
 import { useSession } from "@/contexts/AuthContext";
-import { PasswordButton } from "@/components/PasswordButton";
 
-export default function SingIn() {
+export default function SignIn() {
   const { signIn } = useSession();
   const { height: WindowHeight } = useWindowDimensions();
 
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  function handleSignIn(data: FormSignInProps) {
+    console.log(data)
+    signIn()
+  }
 
   return (
     <SafeAreaView style={[styles.container, { height: WindowHeight }]}>
@@ -39,31 +40,7 @@ export default function SingIn() {
               </Text>
             </View>
 
-            <View style={styles.body}>
-              <View style={styles.loginSection}>
-                <Text style={styles.text}>
-                  Acesse sua conta
-                </Text>
-                <Input
-                  placeholder="E-mail"
-                />
-                <Input
-                  placeholder="Senha"
-                  secureTextEntry={secureTextEntry}
-                >
-                  <PasswordButton
-                    secureTextEntry={secureTextEntry}
-                    onSecureTextEntryChange={setSecureTextEntry}
-                  />
-                </Input>
-              </View>
-
-              <Button
-                title="Entrar"
-                variant="blue"
-                onPress={signIn}
-              />
-            </View>
+            <FormSignIn onSubmit={handleSignIn} />
           </View>
 
           <View style={styles.footer}>
@@ -74,7 +51,7 @@ export default function SingIn() {
             <Button
               title="Criar uma conta"
               variant="gray"
-              onPress={() => router.navigate('/auth/sing-up')}
+              onPress={() => router.navigate('/auth/sign-up')}
             />
           </View>
         </View>
@@ -126,14 +103,6 @@ const styles = StyleSheet.create({
     fontSize: Fonts.FontSize.md,
     color: Colors.gray[200],
     textAlign: 'center'
-  },
-
-  body: {
-    gap: 32,
-  },
-
-  loginSection: {
-    gap: 16
   },
 
   footer: {

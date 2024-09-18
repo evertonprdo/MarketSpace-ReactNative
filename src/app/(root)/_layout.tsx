@@ -5,7 +5,7 @@ import { useSession } from "@/contexts/AuthContext";
 export default function RootLayout() {
   const { session } = useSession()
 
-  if (!session) return <Redirect href={"/auth/sing-in"} />
+  if (!session) return <Redirect href={"/auth/sign-in"} />
 
   return (
     <Stack screenOptions={{

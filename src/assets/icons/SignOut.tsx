@@ -1,6 +1,6 @@
 import * as React from "react";
 import Svg, { Path, SvgProps } from "react-native-svg";
-const SingOut = (props: SvgProps) => (
+const SignOut = (props: SvgProps) => (
   <Svg
     width={32}
     height={32}
@@ -24,4 +24,4 @@ const SingOut = (props: SvgProps) => (
     />
   </Svg>
 );
-export default SingOut;
+export default SignOut;

@@ -5,7 +5,7 @@ import HouseBold from "@/assets/icons/HouseBold";
 import HouseRegular from "@/assets/icons/HouseRegular";
 import TagBold from "@/assets/icons/TagBold";
 import TagRegular from "@/assets/icons/TagRegular";
-import SingOut from "@/assets/icons/SingOut";
+import SignOut from "@/assets/icons/SignOut";
 
 import Colors from "@/constants/Color";
 
@@ -49,9 +49,9 @@ export default function RootLayout() {
       />
 
       <Tabs.Screen
-        name="sing-out"
+        name="sign-out"
         options={{
-          tabBarIcon: () => <SingOut fill={"#E07878"} height={IconSize} width={IconSize} />
+          tabBarIcon: () => <SignOut fill={"#E07878"} height={IconSize} width={IconSize} />
         }}
       />
     </Tabs>

@@ -1,10 +1,13 @@
 import { Pressable, StyleSheet, Text, View } from "react-native";
-import { Input } from "./base/Input";
-import { Checkable } from "./base/Checkable";
-import { Toggle } from "./base/Toggle";
+
 import Plus from "@/assets/icons/Plus";
+
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
+
+import { Input } from "@/components/base/Input";
+import { Checkable } from "@/components/base/Checkable";
+import { Toggle } from "@/components/base/Toggle";
 
 export function Form() {
   return (

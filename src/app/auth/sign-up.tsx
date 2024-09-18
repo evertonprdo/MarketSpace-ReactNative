@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -7,21 +8,43 @@ import Logo from "@/assets/Logo";
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-import { Input } from "@/components/base/Input";
 import { Button } from "@/components/base/Button";
-import { ImagePicker, ImagePickerImgProps } from "@/components/ImagePicker";
-import { PasswordButton } from "@/components/PasswordButton";
+import { FormSignUp, FormSignUpProps } from "@/components/Form/SignUp";
+import { Alert } from "@/components/base/Alert";
 
 import { useSession } from "@/contexts/AuthContext";
-import { router } from "expo-router";
 
-export default function SingUp() {
+export default function SignUp() {
   const { signIn } = useSession()
 
-  const [secureTextEntry, setSecureTextEntry] = useState(true);
+  const [warning, setWarning] = useState({
+    title: '',
+    message: ''
+  })
+  const [showModal, setShowModal] = useState(false)
 
-  const [image, setImage] = useState<ImagePickerImgProps | null>(null)
-  const [form, setForm] = useState()
+  function handleSignUp(data: FormSignUpProps) {
+    if (data.password !== data.password_confirm) {
+      setWarning({
+        title: 'Confirmar senha',
+        message: 'O campo senha deve ter uma correspondencia exata com o campo confirmar senha'
+      })
+      setShowModal(true)
+      return
+    }
+
+    if (data.avatar === null) {
+      setWarning({
+        title: 'Imagem de perfil',
+        message: 'A foto de perfil é obrigatória pois o recurso de editar foto de perfil não está disponivel na aplicação'
+      })
+      setShowModal(true)
+      return
+    }
+
+    console.log(data)
+    signIn()
+  }
 
   return (
     <ScrollView
@@ -40,46 +63,21 @@ export default function SingUp() {
         </Text>
       </SafeAreaView>
 
-      <View style={styles.body}>
-        <View style={styles.section}>
-          <ImagePicker
-            image={image}
-            onImageChange={setImage}
-            style={styles.selfCenter}
-          />
-
-          <Input placeholder="Nome" />
-          <Input placeholder="E-mail" />
-          <Input placeholder="Telefone" />
-
-          <Input
-            placeholder="Senha"
-            secureTextEntry={secureTextEntry}
-          >
-            <PasswordButton
-              secureTextEntry={secureTextEntry}
-              onSecureTextEntryChange={setSecureTextEntry}
-            />
-          </Input>
-
-          <Input
-            placeholder="Confirmar senha"
-            secureTextEntry={secureTextEntry}
-          >
-            <PasswordButton
-              secureTextEntry={secureTextEntry}
-              onSecureTextEntryChange={setSecureTextEntry}
-            />
-          </Input>
-
-        </View>
-        <Button title="Criar" variant="black" onPress={signIn} />
-      </View>
+      <FormSignUp
+        onSubmit={handleSignUp}
+      />
 
       <View style={styles.section}>
         <Text style={styles.text}>Já tem uma conta?</Text>
-        <Button title="Ir para o login" variant="gray" onPress={() => router.dismiss()} />
+        <Button title="Ir para o login" variant="gray" onPress={() => router.back()} />
       </View>
+
+      <Alert
+        visible={showModal}
+        title={warning.title}
+        message={warning.message}
+        onConfirm={() => setShowModal(false)}
+      />
     </ScrollView>
   )
 }

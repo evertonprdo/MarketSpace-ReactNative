@@ -8,8 +8,8 @@ export default function AuthLayout() {
       headerShown: false,
       contentStyle: { backgroundColor: Colors.gray[600] }
     }}>
-      <Stack.Screen name="sing-in" />
-      <Stack.Screen name="sing-up" />
+      <Stack.Screen name="sign-in" />
+      <Stack.Screen name="sign-up" />
     </Stack>
   )
 }
