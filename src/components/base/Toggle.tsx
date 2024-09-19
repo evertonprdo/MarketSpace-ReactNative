@@ -5,11 +5,12 @@ import Colors from "@/constants/Color";
 
 type Props = PressableProps & {
   value?: boolean
+  onValueChange?: (value: boolean) => void
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
-export function Toggle({ value, ...props }: Props) {
+export function Toggle({ value, onValueChange, ...props }: Props) {
   const isActive = useSharedValue(false);
 
   isActive.value = value ?? false
@@ -34,6 +35,7 @@ export function Toggle({ value, ...props }: Props) {
     <AnimatedPressable
       style={[styles.container, animatedStyles]}
       hitSlop={8}
+      onPress={onValueChange ? () => onValueChange(!value) : undefined}
       {...props}
     >
 

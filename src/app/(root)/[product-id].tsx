@@ -10,10 +10,25 @@ import Fonts from "@/constants/Fonts";
 import { Header } from "@/components/Header";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { Button } from "@/components/base/Button";
-import { Details } from "@/components/Details";
+import { Details, DetailsObjProps } from "@/components/Details";
+import { useState } from "react";
 
 export default function AdDetails() {
   const params = useLocalSearchParams();
+
+  const [adDetails, setAdDetails] = useState<DetailsObjProps>({
+    user: {
+      avatar: { uri: 'sad' },
+      name: 'Maria Gomes'
+    },
+    images: testArray,
+    name: 'Tênis vermelho',
+    description: 'Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. ',
+    accept_trade: true,
+    is_new: true,
+    payment_methods: ['boleto', 'card', 'cash', 'deposit', 'pix'],
+    price: 15049
+  })
 
   return (
     <View style={styles.container}>
@@ -29,14 +44,19 @@ export default function AdDetails() {
         )}
       />
 
-      <Details />
+      <Details
+        adDetails={adDetails}
+      />
 
       <View style={styles.footer}>
 
         <Text style={styles.footerText}>
           R${' '}
           <Text style={styles.footerPrice}>
-            120,00
+            {(adDetails.price / 100).toLocaleString('pt-BR', {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2
+            })}
           </Text>
         </Text>
 
@@ -77,3 +97,9 @@ const styles = StyleSheet.create({
     fontSize: Fonts.FontSize.xxl
   }
 })
+
+const testArray = [
+  { uri: 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg' },
+  { uri: 'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
+  { uri: 'https://img-cdn.pixlr.com/image-generator/history/65ba5701b4f4f4419f746bc3/806ecb58-167c-4d20-b658-a6a6b2f221e9/medium.webp' }
+]

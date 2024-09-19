@@ -40,7 +40,9 @@ export default function SignIn() {
               </Text>
             </View>
 
-            <FormSignIn onSubmit={handleSignIn} />
+            <FormSignIn
+              onSubmit={handleSignIn}
+            />
           </View>
 
           <View style={styles.footer}>

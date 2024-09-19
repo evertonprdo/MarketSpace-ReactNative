@@ -12,26 +12,57 @@ import Bank from "@/assets/icons/Bank";
 import ImageProfile from "@/assets/profilePhoto.jpeg"
 
 import { Carrosel } from "@/components/Carrosel";
+import { useEffect, useState } from "react";
 
-type Props = {
-  children?: React.ReactNode
-  tempProp?: boolean
+const PaymentArray = [
+  { name: 'boleto', icon: Barcode, title: 'Boleto' },
+  { name: 'pix', icon: QrCode, title: 'Pix' },
+  { name: 'cash', icon: Money, title: 'Dinheiro' },
+  { name: 'card', icon: CreditCard, title: 'Cartão de Crédito' },
+  { name: 'deposit', icon: Bank, title: 'Deposito Bancário' },
+]
+type PaymentMethods = 'boleto' | 'pix' | 'cash' | 'card' | 'deposit'
+export type DetailsObjProps = {
+  user: {
+    name: string
+    avatar: { uri: string }
+  }
+  images: { uri: string }[]
+  name: string
+  description: string
+  is_new: boolean
+  price: number
+  accept_trade: boolean
+  payment_methods: PaymentMethods[]
 }
 
-const testArray = [
-  'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg',
-  'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
-  'https://img-cdn.pixlr.com/image-generator/history/65ba5701b4f4f4419f746bc3/806ecb58-167c-4d20-b658-a6a6b2f221e9/medium.webp'
-]
+type Props = {
+  adDetails: DetailsObjProps
+  disabledAd?: boolean
+  children?: React.ReactNode
+}
 
-export function Details({ children, tempProp }: Props) {
-  const paymentArray = [
-    { icon: Barcode, title: 'Boleto' },
-    { icon: QrCode, title: 'Pix' },
-    { icon: Money, title: 'Dinheiro' },
-    { icon: CreditCard, title: 'Cartão de Crédito' },
-    { icon: Bank, title: 'Deposito Bancário' },
-  ]
+export function Details({
+  adDetails: {
+    user,
+    images,
+    name,
+    description,
+    is_new,
+    price,
+    accept_trade,
+    payment_methods
+  },
+  disabledAd,
+  children
+}: Props) {
+  const [RenderPaymentArray, setRenderPaymentArray] = useState<typeof PaymentArray>([])
+
+  useEffect(() => {
+    setRenderPaymentArray(PaymentArray.filter(payObj => {
+      return payment_methods.includes(payObj.name as PaymentMethods)
+    }))
+  }, [payment_methods])
 
   return (
     <ScrollView
@@ -39,30 +70,42 @@ export function Details({ children, tempProp }: Props) {
       showsVerticalScrollIndicator={false}
     >
       <Carrosel
-        imagesUri={testArray}
-        disabledAd={tempProp}
+        images={images}
+        disabledAd={disabledAd}
       />
 
       <View style={styles.info}>
 
         <View style={styles.user}>
           <Image source={ImageProfile} style={styles.avatar} />
-          <Text style={styles.username}>Makenna Baptista</Text>
+
+          <Text style={styles.username}>
+            {user.name}
+          </Text>
         </View>
 
         <View style={styles.column}>
-          <Text style={styles.tag}>Novo</Text>
+          <Text style={styles.tag}>
+            {is_new ? 'Novo' : 'Usado'}
+          </Text>
 
           <View style={styles.titleContainer}>
-            <Text style={styles.title}>Bicicleta</Text>
+            <Text style={styles.title}>
+              {name}
+            </Text>
 
             <Text style={styles.price}>R${' '}
-              <Text style={styles.priceValue}>120,00</Text>
+              <Text style={styles.priceValue}>
+                {(price / 100).toLocaleString('pt-BR', {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2
+                })}
+              </Text>
             </Text>
           </View>
 
           <Text style={styles.descText}>
-            Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. Mauris metus amet nibh mauris mauris accumsan, euismod. Aenean leo nunc, purus iaculis in aliquam.
+            {description}
           </Text>
         </View>
 
@@ -70,21 +113,23 @@ export function Details({ children, tempProp }: Props) {
 
           <View style={styles.line}>
             <Text style={styles.subTitle}>Aceita Troca?</Text>
-            <Text style={styles.text}>Sim</Text>
+
+            <Text style={styles.text}>
+              {accept_trade ? 'Sim' : 'Não'}
+            </Text>
           </View>
 
           <View style={styles.column}>
             <Text style={styles.subTitle}>Meios de pagamento</Text>
 
             <View style={styles.paymentBox}>
-              {paymentArray.map(({ icon: Icon, title }) => (
+              {RenderPaymentArray.map(({ icon: Icon, title }) => (
                 <View style={styles.line} key={title}>
                   <Icon
                     fill={Colors.gray[200]}
                     height={18}
                     width={18}
                   />
-
                   <Text style={styles.text}>
                     {title}
                   </Text>

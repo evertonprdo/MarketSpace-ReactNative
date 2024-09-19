@@ -16,7 +16,7 @@ const animConfig = {
   easing: Easing.out(Easing.poly(4)),
 }
 
-export function PressableIcon({ icon: Icon, fill = 'none', stroke = 'none', size, onPressIn, onPressOut, ...props }: Props) {
+export function PressableIcon({ icon: Icon, fill = 'none', stroke = 'none', size, onPressIn, onPressOut, style, ...props }: Props) {
   const isPressedIn = useSharedValue(false);
 
   const animatedStyle = useAnimatedStyle(() => ({

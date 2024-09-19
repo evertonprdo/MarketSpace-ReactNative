@@ -8,6 +8,7 @@ type Props<T extends FieldValues> = {
   control: Control<T>
   name: Path<T>
   onChangeTextCallback?: (text: string) => void
+  childDisplacement?: 'left' | 'right'
 } & Omit<TextInputProps, 'value' | 'onChangeText'>
 
 function FormInputInner<T extends FieldValues>(

@@ -2,19 +2,20 @@ import { Pressable, PressableProps, StyleSheet, Text } from "react-native";
 
 import Check from "@/assets/icons/Check";
 import Square from "@/assets/icons/Square";
+import Circle from "@/assets/icons/Circle";
+import RadioButton from "@/assets/icons/RadioButton";
 
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
-import Circle from "@/assets/icons/Circle";
-import RadioButton from "@/assets/icons/RadioButton";
 
 type Props = PressableProps & {
   label: string
   variant: "radio" | "checkbox"
   value?: boolean
+  onChangeValue?: (value: boolean) => void
 }
 
-export function Checkable({ label, value, variant, ...props }: Props) {
+export function Checkable({ label, value, variant, onChangeValue, ...props }: Props) {
   const Icon = variant === "checkbox"
     ? { Active: Check, NotActive: Square }
     : { Active: RadioButton, NotActive: Circle }
@@ -25,6 +26,7 @@ export function Checkable({ label, value, variant, ...props }: Props) {
     <Pressable
       style={styles.container}
       hitSlop={8}
+      onPress={onChangeValue ? () => onChangeValue(!value) : undefined}
       {...props}
     >
       {value

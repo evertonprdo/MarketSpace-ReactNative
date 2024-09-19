@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
@@ -6,15 +6,42 @@ import ArrowLeft from "@/assets/icons/ArrowLeft";
 
 import Colors from "@/constants/Color";
 
-import { Form } from "@/components/Form";
 import { Header } from "@/components/Header";
-import { Details } from "@/components/Details";
+import { Details, DetailsObjProps } from "@/components/Details";
 import { Button } from "@/components/base/Button";
 import { AdPreview } from "@/components/AdPreview";
 import { PressableIcon } from "@/components/base/PressableIcon";
+import { FormAd, FormAdProps, FormAdRef } from "@/components/Form/Ad";
 
 export default function CreateAd() {
   const [showModal, setShowModal] = useState(false);
+
+  const [preview, setPreview] = useState<DetailsObjProps>({} as DetailsObjProps)
+  const [isLoading, setIsLoading] = useState(false)
+
+  const formAdRef = useRef<FormAdRef>(null)
+
+  function handleOnPressNext() {
+    if (formAdRef.current) {
+      formAdRef.current.submitForm();
+    }
+  }
+
+  function handleNext(data: FormAdProps) {
+    const { price, ...formData } = data
+
+    const parsedPrice = Number(price.replace('.', '').replace(',', '.')) * 100
+
+    setPreview({
+      ...formData,
+      price: parsedPrice,
+      user: {
+        name: 'Maria Gomes',
+        avatar: { uri: 'ss' }
+      }
+    })
+    setShowModal(true)
+  }
 
   return (
     <View style={styles.flex}>
@@ -35,7 +62,10 @@ export default function CreateAd() {
           }
         />
 
-        <Form />
+        <FormAd
+          ref={formAdRef}
+          onSubmit={handleNext}
+        />
 
       </ScrollView>
 
@@ -51,16 +81,19 @@ export default function CreateAd() {
           title="Avançar"
           variant="black"
           style={styles.flex}
-          onPress={() => setShowModal(true)}
+          onPress={handleOnPressNext}
         />
       </View>
 
       <AdPreview
         visible={showModal}
         onCancel={() => setShowModal(false)}
-        onConfirm={() => {}}
+        onConfirm={() => setIsLoading(true)}
+        isLoading={isLoading}
       >
-        <Details/>
+        <Details
+          adDetails={preview}
+        />
       </AdPreview>
     </View>
   )

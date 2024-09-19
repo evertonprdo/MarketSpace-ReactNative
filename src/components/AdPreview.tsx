@@ -9,9 +9,10 @@ import Fonts from "@/constants/Fonts";
 type Props = ModalProps & {
   onConfirm: () => void
   onCancel: () => void
+  isLoading?: boolean
 }
 
-export function AdPreview({ onConfirm, onCancel, children, ...props }: Props) {
+export function AdPreview({ onConfirm, onCancel, isLoading, children, ...props }: Props) {
   return (
     <Modal
       animationType="slide"
@@ -42,6 +43,7 @@ export function AdPreview({ onConfirm, onCancel, children, ...props }: Props) {
           style={styles.flex}
           icon={TagRegular}
           onPress={onConfirm}
+          isLoading={isLoading}
         />
       </View>
     </Modal>

@@ -6,10 +6,11 @@ import { z } from "zod"
 
 import { PasswordButton } from "@/components/PasswordButton";
 import { Button } from "@/components/base/Button";
-import { ImagePicker } from "@/components/ImagePicker";
+import { ImagePickerProfile } from "@/components/ImagePicker/Profile";
 import { FormInput } from "@/components/Form/Input";
 
-const BrazilianPhoneRegExp = /^\([1-9]{2}\) (?:[2-8]|9[0-9])[0-9]{3}\-[0-9]{4}$/ // (XX) XXXX-XXXX || (XX) 9XXXX-XXXX
+// (XX) XXXX-XXXX || (XX) 9XXXX-XXXX
+const BrazilianPhoneRegExp = /^\([1-9]{2}\) (?:[2-8]|9[0-9])[0-9]{3}\-[0-9]{4}$/ 
 
 export const signUpSchema = z.object({
   avatar: z.object({
@@ -18,22 +19,22 @@ export const signUpSchema = z.object({
     type: z.string(),
   }).nullable(),
   name: z
-    .string({ required_error: 'Informe o nome' })
+    .string({ required_error: 'Informe o nome' }).trim()
     .min(1, { message: 'Informe o nome' })
     .min(3, { message: 'O nome deve ter pelo menos 3 dígitos' }),
   email: z
-    .string({ required_error: 'Informe o e-mail' })
+    .string({ required_error: 'Informe o e-mail' }).trim()
     .min(1, { message: "Informe o e-mail" })
     .email({ message: 'E-mail inválido' }),
   tel: z
-    .string({ required_error: 'Informe o telefone' })
+    .string({ required_error: 'Informe o telefone' }).trim()
     .min(1, { message: 'Informe o telefone' })
     .regex(BrazilianPhoneRegExp, { message: 'Telefone inválido' }),
   password: z
-    .string({ required_error: 'Informe a senha' })
+    .string({ required_error: 'Informe a senha' }).trim()
     .min(6, { message: 'A senha deve ter pelo menos 6 dígitos' }),
   password_confirm: z
-    .string({ required_error: 'Informe a confirmação da senha' })
+    .string({ required_error: 'Informe a confirmação da senha' }).trim()
     .min(6, { message: 'A senha deve ter pelo menos 6 dígitos' }),
 })
 
@@ -45,6 +46,7 @@ type Props = {
 
 export function FormSignUp({ onSubmit }: Props) {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
+  
   const IptRefs = [
     useRef<TextInput>(null),
     useRef<TextInput>(null),
@@ -84,7 +86,7 @@ export function FormSignUp({ onSubmit }: Props) {
         control={control}
         name="avatar"
         render={({ field: { onChange, value } }) => (
-          <ImagePicker
+          <ImagePickerProfile
             image={value ?? null}
             onImageChange={onChange}
             style={styles.selfCenter}

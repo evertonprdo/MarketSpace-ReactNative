@@ -4,6 +4,7 @@ import Animated, { FadeIn, FadeOut, useAnimatedStyle, useSharedValue, withTiming
 
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
+import { TextErr } from "../Form/TextErr";
 
 type Props = Omit<TextInputProps, "children"> & {
   children?: React.ReactNode
@@ -58,7 +59,7 @@ export const Input = forwardRef<TextInput, Props>(({ children, childDisplacement
 
       {errorMessage && (
         <Animated.View style={styles.absolute} entering={FadeIn} exiting={FadeOut}>
-          <Text style={styles.absoluteText}>{errorMessage}</Text>
+          <TextErr>{errorMessage}</TextErr>
         </Animated.View>
       )}
 
@@ -102,10 +103,4 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gray[700],
     borderRadius: 4
   },
-
-  absoluteText: {
-    fontFamily: Fonts.FontFamily.regular,
-    fontSize: 10,
-    color: Colors.redLight
-  }
 })

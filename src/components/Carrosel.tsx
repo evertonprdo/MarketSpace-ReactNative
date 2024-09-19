@@ -5,10 +5,10 @@ import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
 type ProductCarroselProsp = ViewProps & {
-  imagesUri: string[],
+  images: { uri: string }[],
   disabledAd?: boolean
 }
-export function Carrosel({ imagesUri, disabledAd, ...props }: ProductCarroselProsp) {
+export function Carrosel({ images, disabledAd, ...props }: ProductCarroselProsp) {
   const [currentView, setCurrentView] = useState("")
   const { width } = useWindowDimensions();
 
@@ -17,14 +17,14 @@ export function Carrosel({ imagesUri, disabledAd, ...props }: ProductCarroselPro
   return (
     <View style={styles.container} {...props}>
       <FlatList
-        data={imagesUri}
-        keyExtractor={item => item}
+        data={images}
+        keyExtractor={item => item.uri}
         renderItem={({ item }) => (
           <Image
-            source={{ uri: item }}
+            source={item}
             style={{
               width: width,
-              backgroundColor: item
+              backgroundColor: Colors.gray[300]
             }}
             resizeMode="cover"
           />
@@ -38,12 +38,12 @@ export function Carrosel({ imagesUri, disabledAd, ...props }: ProductCarroselPro
       />
 
       <View style={styles.slider}>
-        
-        {imagesUri.map(item => (
+
+        {images.map(item => (
           <View
-            key={item}
+            key={item.uri}
             style={[styles.sliderItem, {
-              backgroundColor: item === currentView
+              backgroundColor: item.uri === currentView
                 ? bgBadgeColors[0]
                 : bgBadgeColors[1]
             }]}

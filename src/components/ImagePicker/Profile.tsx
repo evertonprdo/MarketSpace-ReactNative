@@ -26,7 +26,7 @@ const animConfig = {
   easing: Easing.out(Easing.poly(4)),
 }
 
-export function ImagePicker({ image, onImageChange, ...props }: Props) {
+export function ImagePickerProfile({ image, onImageChange, ...props }: Props) {
   const isPressedIn = useSharedValue(false);
 
   const animStyle = useAnimatedStyle(() => ({

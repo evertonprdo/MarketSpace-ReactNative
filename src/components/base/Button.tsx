@@ -1,4 +1,4 @@
-import { GestureResponderEvent, Pressable, PressableProps, StyleSheet, Text } from "react-native";
+import { ActivityIndicator, GestureResponderEvent, Pressable, PressableProps, StyleSheet, Text } from "react-native";
 import Animated, { useAnimatedStyle, useSharedValue, withTiming, Easing } from "react-native-reanimated";
 import { SvgProps } from "react-native-svg";
 
@@ -11,6 +11,7 @@ type Props = Omit<PressableProps, "children"> & {
   variant: BtnVariants
   title: string
   icon?: (props: SvgProps) => React.JSX.Element
+  isLoading?: boolean
 }
 
 const variantStyles = {
@@ -37,7 +38,7 @@ const animConfig = {
   easing: Easing.out(Easing.poly(4)),
 }
 
-export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, style, ...props }: Props) {
+export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, style, isLoading, ...props }: Props) {
   const isPressedIn = useSharedValue(false)
 
   const animatedStyle = useAnimatedStyle(() => ({
@@ -71,11 +72,20 @@ export function Button({ title, variant, icon: Icon, onPressIn, onPressOut, styl
       onPressOut={handleOnPressOut}
       {...props}
     >
-      {Icon && <Icon fill={variantStyles[variant].color} height={16} width={16} />}
+      {isLoading ? (
+        <ActivityIndicator
+          color={variantStyles[variant].color}
+          style={styles.absolute}
+        />
+      ) : (
+        <>
+          {Icon && <Icon fill={variantStyles[variant].color} height={16} width={16} />}
 
-      <Text style={[styles.text, { color: variantStyles[variant].color }]}>
-        {title}
-      </Text>
+          <Text style={[styles.text, { color: variantStyles[variant].color }]}>
+            {title}
+          </Text>
+        </>
+      )}
     </AnimatedPressable>
   )
 }
@@ -93,5 +103,11 @@ const styles = StyleSheet.create({
   text: {
     fontFamily: Fonts.FontFamily.bold,
     fontSize: Fonts.FontSize.md,
+  },
+
+  absolute: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center'
   }
 })

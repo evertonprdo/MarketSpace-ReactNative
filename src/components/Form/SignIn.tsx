@@ -1,6 +1,6 @@
 import { useCallback, useRef, useState } from "react";
-import { useFocusEffect } from "expo-router";
 import { StyleSheet, Text, TextInput, View } from "react-native";
+import { useFocusEffect } from "expo-router";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -14,10 +14,10 @@ import { FormInput } from "@/components/Form/Input";
 
 const signInSchema = z.object({
   email: z
-    .string({ required_error: 'Informe o e-mail' })
+    .string({ required_error: 'Informe o e-mail' }).trim()
     .email({ message: 'E-mail inválido' }),
   password: z
-    .string({ required_error: 'Informe a senha' })
+    .string({ required_error: 'Informe a senha' }).trim()
     .min(6, { message: 'A senha deve ter pelo menos 6 dígitos' })
 })
 
@@ -59,7 +59,7 @@ export function FormSignIn({ onSubmit }: Props) {
           placeholder="Senha"
           ref={IptRefs}
           onSubmitEditing={handleSubmit(onSubmit)}
-          enterKeyHint="next"
+          enterKeyHint="send"
           secureTextEntry={secureTextEntry}
         >
           <PasswordButton
