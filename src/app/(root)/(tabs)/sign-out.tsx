@@ -1,10 +1,11 @@
 import { View } from "react-native";
 
-import { useSession } from "@/contexts/AuthContext";
 import { Button } from "@/components/base/Button";
 
+import { useAuth } from "@/hooks/useAuth";
+
 export default function SignOut() {
-  const { signOut } = useSession()
+  const { signOut } = useAuth()
 
   return (
     <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>

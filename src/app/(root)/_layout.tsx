@@ -1,11 +1,15 @@
 import { Redirect, Stack } from "expo-router";
 
-import { useSession } from "@/contexts/AuthContext";
+import { Loading } from "@/components/base/Loading";
+
+import { useAuth } from "@/hooks/useAuth";
 
 export default function RootLayout() {
-  const { session } = useSession()
+  const { user, isLoadingUserStorageData } = useAuth()
 
-  if (!session) return <Redirect href={"/auth/sign-in"} />
+  if (isLoadingUserStorageData) return <Loading/>
+
+  if (!user) return <Redirect href={"/auth/sign-in"} />
 
   return (
     <Stack screenOptions={{

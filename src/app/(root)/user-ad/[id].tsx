@@ -6,7 +6,6 @@ import PencilSimpleLine from "@/assets/icons/PencilSimpleLine";
 import Power from "@/assets/icons/Power";
 import Trash from "@/assets/icons/Trash";
 
-import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
 import { Button } from "@/components/base/Button";
@@ -20,7 +19,7 @@ import { MessageBox } from "@/components/MessageBox";
 export default function UserAdDetails() {
   const [adDetails, setAdDetails] = useState<DetailsObjProps>({
     user: {
-      avatar: { uri: 'sad' },
+      avatar: 'asd',
       name: 'Maria Gomes'
     },
     images: testArray,

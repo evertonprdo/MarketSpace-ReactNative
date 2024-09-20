@@ -42,9 +42,10 @@ export type FormSignUpProps = z.infer<typeof signUpSchema>
 
 type Props = {
   onSubmit: (data: FormSignUpProps) => void
+  isSubmiting?: boolean
 }
 
-export function FormSignUp({ onSubmit }: Props) {
+export function FormSignUp({ onSubmit, isSubmiting }: Props) {
   const [secureTextEntry, setSecureTextEntry] = useState(true);
   
   const IptRefs = [
@@ -157,6 +158,8 @@ export function FormSignUp({ onSubmit }: Props) {
         title="Criar"
         variant="black"
         onPress={handleSubmit(onSubmit)}
+        isLoading={isSubmiting}
+        disabled={isSubmiting}
         style={styles.btn}
       />
     </View>
@@ -168,5 +171,8 @@ const styles = StyleSheet.create({
 
   selfCenter: { alignSelf: 'center' },
 
-  btn: { marginTop: 8 },
+  btn: { 
+    minHeight: 42,
+    marginTop: 8,
+  },
 })

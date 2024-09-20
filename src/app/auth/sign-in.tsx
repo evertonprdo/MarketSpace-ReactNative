@@ -11,15 +11,23 @@ import Colors from "@/constants/Color";
 import { Button } from "@/components/base/Button";
 import { FormSignIn, FormSignInProps } from "@/components/Form/SignIn";
 
-import { useSession } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+import { useState } from "react";
 
 export default function SignIn() {
-  const { signIn } = useSession();
+  const { signIn } = useAuth();
   const { height: WindowHeight } = useWindowDimensions();
+  const [isLoading, setIsLoading] = useState(false)
 
-  function handleSignIn(data: FormSignInProps) {
-    console.log(data)
-    signIn()
+  async function handleSignIn({ email, password }: FormSignInProps) {
+    try {
+      setIsLoading(true)
+      signIn(email, password)
+
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -42,6 +50,7 @@ export default function SignIn() {
 
             <FormSignIn
               onSubmit={handleSignIn}
+              isSubmiting={isLoading}
             />
           </View>
 

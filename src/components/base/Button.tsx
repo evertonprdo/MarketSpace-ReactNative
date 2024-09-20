@@ -107,7 +107,8 @@ const styles = StyleSheet.create({
 
   absolute: {
     ...StyleSheet.absoluteFillObject,
+
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
   }
 })

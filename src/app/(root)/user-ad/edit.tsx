@@ -19,7 +19,7 @@ export default function EditAd() {
 
   const [adDetails, setAdDetails] = useState<DetailsObjProps>({
     user: {
-      avatar: { uri: 'sad' },
+      avatar: 'asda',
       name: 'Maria Gomes'
     },
     images: testArray,
@@ -57,7 +57,7 @@ export default function EditAd() {
       price: parsedPrice,
       user: {
         name: 'Maria Gomes',
-        avatar: { uri: 'ss' }
+        avatar: 'asd'
       }
     })
     setShowModal(true)

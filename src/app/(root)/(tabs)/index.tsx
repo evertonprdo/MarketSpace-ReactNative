@@ -1,8 +1,8 @@
-import { router } from "expo-router";
+import { useCallback } from "react";
+import { router, useFocusEffect } from "expo-router";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import ProfilePhoto from "@/assets/profilePhoto.jpeg"
 import Plus from "@/assets/icons/Plus";
 
 import Colors from "@/constants/Color";
@@ -13,7 +13,20 @@ import { Button } from "@/components/base/Button";
 import { List } from "@/components/List";
 import { InfoCard } from "@/components/InfoCard";
 
+import { useAuth } from "@/hooks/useAuth";
+
+import { api } from "@/services/api";
+import { getProducts } from "@/services/products";
+
 export default function Home() {
+  const { user } = useAuth()
+
+  const avatar = `${api.defaults.baseURL}/images/${user?.avatar}`
+
+  useFocusEffect(useCallback(() => {
+    getProducts() // TODO this
+  }, []))
+
   return (
     <List
       data={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
@@ -25,12 +38,12 @@ export default function Home() {
 
             <View style={styles.user}>
               <Image
-                source={ProfilePhoto}
+                source={{ uri: avatar }}
                 style={styles.avatar}
               />
 
               <Text style={styles.welcomeText}>Boas vindas,{" \n"}
-                <Text style={styles.welcomeBold}>Maria!</Text>
+                <Text style={styles.welcomeBold}>{user?.name}!</Text>
               </Text>
             </View>
 
@@ -48,7 +61,7 @@ export default function Home() {
               Seus produtos anunciados para venda
             </Text>
 
-            <InfoCard count={4} onPress={() => router.navigate('/user-ads')}/>
+            <InfoCard count={4} onPress={() => router.navigate('/user-ads')} />
           </View>
 
           <View style={styles.section}>

@@ -18,7 +18,7 @@ export default function AdDetails() {
 
   const [adDetails, setAdDetails] = useState<DetailsObjProps>({
     user: {
-      avatar: { uri: 'sad' },
+      avatar: 'asd',
       name: 'Maria Gomes'
     },
     images: testArray,

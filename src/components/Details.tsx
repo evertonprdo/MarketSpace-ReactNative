@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import Colors from "@/constants/Color";
@@ -9,10 +10,10 @@ import QrCode from "@/assets/icons/QrCode";
 import Money from "@/assets/icons/Money";
 import Bank from "@/assets/icons/Bank";
 
-import ImageProfile from "@/assets/profilePhoto.jpeg"
-
 import { Carrosel } from "@/components/Carrosel";
-import { useEffect, useState } from "react";
+
+import { api } from "@/services/api";
+import { PaymentMethods, PostProductRequest } from "@/dtos/productsDTO";
 
 const PaymentArray = [
   { name: 'boleto', icon: Barcode, title: 'Boleto' },
@@ -21,20 +22,14 @@ const PaymentArray = [
   { name: 'card', icon: CreditCard, title: 'Cartão de Crédito' },
   { name: 'deposit', icon: Bank, title: 'Deposito Bancário' },
 ]
-type PaymentMethods = 'boleto' | 'pix' | 'cash' | 'card' | 'deposit'
+
 export type DetailsObjProps = {
   user: {
     name: string
-    avatar: { uri: string }
+    avatar: string
   }
   images: { uri: string }[]
-  name: string
-  description: string
-  is_new: boolean
-  price: number
-  accept_trade: boolean
-  payment_methods: PaymentMethods[]
-}
+} & PostProductRequest
 
 type Props = {
   adDetails: DetailsObjProps
@@ -57,6 +52,7 @@ export function Details({
   children
 }: Props) {
   const [RenderPaymentArray, setRenderPaymentArray] = useState<typeof PaymentArray>([])
+  const avatar = `${api.defaults.baseURL}/images/${user.avatar}`
 
   useEffect(() => {
     setRenderPaymentArray(PaymentArray.filter(payObj => {
@@ -77,7 +73,7 @@ export function Details({
       <View style={styles.info}>
 
         <View style={styles.user}>
-          <Image source={ImageProfile} style={styles.avatar} />
+          <Image source={{ uri: avatar }} style={styles.avatar} />
 
           <Text style={styles.username}>
             {user.name}

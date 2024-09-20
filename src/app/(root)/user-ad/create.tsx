@@ -7,16 +7,29 @@ import ArrowLeft from "@/assets/icons/ArrowLeft";
 import Colors from "@/constants/Color";
 
 import { Header } from "@/components/Header";
-import { Details, DetailsObjProps } from "@/components/Details";
+import { Details } from "@/components/Details";
 import { Button } from "@/components/base/Button";
 import { AdPreview } from "@/components/AdPreview";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { FormAd, FormAdProps, FormAdRef } from "@/components/Form/Ad";
 
+import type { UserDTO } from "@/dtos/userDTO";
+import type { PostProductRequest } from "@/dtos/productsDTO";
+
+import { useAuth } from "@/hooks/useAuth";
+import { postProduct, postProductImages, PostProductImagesRequest } from "@/services/products";
+
+type ProductPreviewProps = { user: UserDTO }
+  & PostProductRequest
+  & Omit<PostProductImagesRequest, 'product_id'>
+
 export default function CreateAd() {
+  const auth = useAuth()
+  const user = auth.user as UserDTO
+
   const [showModal, setShowModal] = useState(false);
 
-  const [preview, setPreview] = useState<DetailsObjProps>({} as DetailsObjProps)
+  const [preview, setPreview] = useState({} as ProductPreviewProps)
   const [isLoading, setIsLoading] = useState(false)
 
   const formAdRef = useRef<FormAdRef>(null)
@@ -35,12 +48,30 @@ export default function CreateAd() {
     setPreview({
       ...formData,
       price: parsedPrice,
-      user: {
-        name: 'Maria Gomes',
-        avatar: { uri: 'ss' }
-      }
+      user
     })
     setShowModal(true)
+  }
+
+  async function handlePostProduct() {
+    try {
+      setIsLoading(true)
+
+      const { id } = await postProduct(preview)
+
+      await postProductImages({
+        product_id: id,
+        images: preview.images
+      })
+
+      router.dismissAll()
+      router.navigate({
+        pathname: '/user-ad/[id]',
+        params: { id }
+      })
+    } catch (error) {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -88,7 +119,7 @@ export default function CreateAd() {
       <AdPreview
         visible={showModal}
         onCancel={() => setShowModal(false)}
-        onConfirm={() => setIsLoading(true)}
+        onConfirm={handlePostProduct}
         isLoading={isLoading}
       >
         <Details

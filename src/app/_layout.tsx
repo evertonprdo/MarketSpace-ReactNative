@@ -5,7 +5,7 @@ import { Karla_400Regular, Karla_700Bold, useFonts } from "@expo-google-fonts/ka
 
 import Colors from "@/constants/Color";
 
-import { SessionProvider } from "@/contexts/AuthContext";
+import { AuthContextProvider } from "@/contexts/AuthContext";
 import { StatusBar } from "expo-status-bar";
 
 export default function AppLayout() {
@@ -15,7 +15,7 @@ export default function AppLayout() {
 
   return (
     <SafeAreaProvider>
-      <SessionProvider>
+      <AuthContextProvider>
 
         <View style={styles.container}>
           <StatusBar
@@ -26,7 +26,7 @@ export default function AppLayout() {
           <Slot />
         </View>
 
-      </SessionProvider>
+      </AuthContextProvider>
     </SafeAreaProvider>
   )
 }

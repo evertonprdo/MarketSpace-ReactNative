@@ -12,18 +12,20 @@ import { Button } from "@/components/base/Button";
 import { FormSignUp, FormSignUpProps } from "@/components/Form/SignUp";
 import { Alert } from "@/components/base/Alert";
 
-import { useSession } from "@/contexts/AuthContext";
+import { useAuth } from "@/hooks/useAuth";
+import { postUser } from "@/services/users";
 
 export default function SignUp() {
-  const { signIn } = useSession()
+  const { signIn } = useAuth()
 
   const [warning, setWarning] = useState({
     title: '',
     message: ''
   })
   const [showModal, setShowModal] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  function handleSignUp(data: FormSignUpProps) {
+  async function handleSignUp(data: FormSignUpProps) {
     if (data.password !== data.password_confirm) {
       setWarning({
         title: 'Confirmar senha',
@@ -42,8 +44,22 @@ export default function SignUp() {
       return
     }
 
-    console.log(data)
-    signIn()
+    try {
+      setIsLoading(true)
+
+      const fmtPhone = `+55${data.tel.replace(/\D/g, '')}`
+
+      await postUser({
+        ...data,
+        avatar: data.avatar,
+        tel: fmtPhone
+      })
+      await signIn(data.email, data.password)
+
+    } catch (error) {
+      console.log(error)
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -65,6 +81,7 @@ export default function SignUp() {
 
       <FormSignUp
         onSubmit={handleSignUp}
+        isSubmiting={isLoading}
       />
 
       <View style={styles.section}>

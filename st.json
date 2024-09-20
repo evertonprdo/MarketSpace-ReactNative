@@ -1,0 +1,99 @@
+[
+  {
+    "id": "1e50adb1-51e3-4202-ab4a-273e522b77d8",
+    "name": "Luminária Pendente",
+    "price": 45000,
+    "is_new": true,
+    "accept_trade": true,
+    "product_images": [],
+    "payment_methods": [
+      {
+        "key": "pix",
+        "name": "Pix"
+      },
+      {
+        "key": "card",
+        "name": "Cartão de Crédito"
+      }
+    ],
+    "user": {
+      "avatar": "86a5bd92c31c8bd13173-00073-1759871112.png"
+    }
+  },
+  {
+    "id": "6d744438-151e-4f1d-94e8-aebf1f459c68",
+    "name": "Picture 2",
+    "price": 35089,
+    "is_new": false,
+    "accept_trade": true,
+    "product_images": [
+      {
+        "path": "1bb506b13d6ad867638d-ad-img.png",
+        "id": "ea9186ec-2d02-43b4-ae0c-84a3eacd139d"
+      },
+      {
+        "path": "c8a4605e0c6671979ea2-ad-img.jpeg",
+        "id": "cb733c8f-fa27-4f69-a95c-ce66630205ba"
+      }
+    ],
+    "payment_methods": [
+      {
+        "key": "deposit",
+        "name": "Depósito Bancário"
+      },
+      {
+        "key": "pix",
+        "name": "Pix"
+      },
+      {
+        "key": "cash",
+        "name": "Dinheiro"
+      },
+      {
+        "key": "boleto",
+        "name": "Boleto"
+      },
+      {
+        "key": "card",
+        "name": "Cartão de Crédito"
+      }
+    ],
+    "user": {
+      "avatar": "efa329ef92081b5d9262-user-photo.jpeg"
+    }
+  },
+  {
+    "id": "a7135533-6f0f-48cd-a709-34eddf48f415",
+    "name": "Picture Pack",
+    "price": 25000,
+    "is_new": true,
+    "accept_trade": false,
+    "product_images": [
+      {
+        "path": "f9b654097bfe986c85c6-ad-img.jpeg",
+        "id": "8ccf4709-2bc5-4bdf-b757-89df79d0f039"
+      },
+      {
+        "path": "c031f9bad22c66d345fd-ad-img.png",
+        "id": "1ebe75b0-9ed4-4cc7-9cdc-11a63c8713f1"
+      }
+    ],
+    "payment_methods": [
+      {
+        "key": "deposit",
+        "name": "Depósito Bancário"
+      },
+      {
+        "key": "pix",
+        "name": "Pix"
+      },
+      {
+        "key": "cash",
+        "name": "Dinheiro"
+      }
+    ],
+    "user": {
+      "avatar": "efa329ef92081b5d9262-user-photo.jpeg"
+    }
+  }
+]
