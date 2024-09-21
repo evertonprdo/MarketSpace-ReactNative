@@ -2,26 +2,27 @@ import { useRef, useState } from "react";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import ArrowLeft from "@/assets/icons/ArrowLeft";
+import { fmtValueToImageUriRequest, parseBRLCurrencyToCents } from "@/utils/dataTransform";
 
+import ArrowLeft from "@/assets/icons/ArrowLeft";
 import Colors from "@/constants/Color";
 
 import { Header } from "@/components/Header";
-import { Details } from "@/components/Details";
+import { Details, PaymentNames, ProductDetailsProps } from "@/components/Details";
 import { Button } from "@/components/base/Button";
 import { AdPreview } from "@/components/AdPreview";
 import { PressableIcon } from "@/components/base/PressableIcon";
-import { FormAd, FormAdProps, FormAdRef } from "@/components/Form/Ad";
+import { FormProduct, FormAdProps, FormAdRef } from "@/components/Form/Product";
 
 import type { UserDTO } from "@/dtos/userDTO";
-import type { PostProductRequest } from "@/dtos/productsDTO";
+import type { PaymentMethodsResponse, PostImageProps, PostProductRequest } from "@/dtos/productsDTO";
 
 import { useAuth } from "@/hooks/useAuth";
-import { postProduct, postProductImages, PostProductImagesRequest } from "@/services/products";
+import { postProduct, postProductImages } from "@/services/products";
 
-type ProductPreviewProps = { user: UserDTO }
-  & PostProductRequest
-  & Omit<PostProductImagesRequest, 'product_id'>
+type ProductProps = {
+  images: PostImageProps[]
+} & PostProductRequest
 
 export default function CreateAd() {
   const auth = useAuth()
@@ -29,8 +30,9 @@ export default function CreateAd() {
 
   const [showModal, setShowModal] = useState(false);
 
-  const [preview, setPreview] = useState({} as ProductPreviewProps)
   const [isLoading, setIsLoading] = useState(false)
+  const [product, setProduct] = useState({} as ProductProps)
+  const [preview, setPreview] = useState({} as ProductDetailsProps)
 
   const formAdRef = useRef<FormAdRef>(null)
 
@@ -43,13 +45,30 @@ export default function CreateAd() {
   function handleNext(data: FormAdProps) {
     const { price, ...formData } = data
 
-    const parsedPrice = Number(price.replace('.', '').replace(',', '.')) * 100
+    const paymentArray: PaymentMethodsResponse['payment_methods'] = data.payment_methods.map(
+      paymentKeys => ({
+        key: paymentKeys,
+        name: PaymentNames[paymentKeys]
+      })
+    )
+
+    const imgArray = data.images.map(img => ({ uri: img.uri }))
 
     setPreview({
-      ...formData,
-      price: parsedPrice,
-      user
+      ...data,
+      payment_methods: paymentArray,
+      images: imgArray,
+      user: {
+        avatar: fmtValueToImageUriRequest(user.avatar),
+        name: user.name
+      }
     })
+
+    setProduct({
+      ...formData,
+      price: parseBRLCurrencyToCents(price),
+    })
+
     setShowModal(true)
   }
 
@@ -57,19 +76,17 @@ export default function CreateAd() {
     try {
       setIsLoading(true)
 
-      const { id } = await postProduct(preview)
+      const { id } = await postProduct(product)
 
       await postProductImages({
         product_id: id,
-        images: preview.images
+        images: product.images
       })
 
       router.dismissAll()
-      router.navigate({
-        pathname: '/user-ad/[id]',
-        params: { id }
-      })
+
     } catch (error) {
+      console.log(error)
       setIsLoading(false)
     }
   }
@@ -93,7 +110,7 @@ export default function CreateAd() {
           }
         />
 
-        <FormAd
+        <FormProduct
           ref={formAdRef}
           onSubmit={handleNext}
         />
@@ -123,7 +140,8 @@ export default function CreateAd() {
         isLoading={isLoading}
       >
         <Details
-          adDetails={preview}
+          product={preview}
+          key={'ProductCreateModal'}
         />
       </AdPreview>
     </View>

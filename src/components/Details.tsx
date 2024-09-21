@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 
 import Colors from "@/constants/Color";
@@ -12,96 +11,88 @@ import Bank from "@/assets/icons/Bank";
 
 import { Carrosel } from "@/components/Carrosel";
 
-import { api } from "@/services/api";
-import { PaymentMethods, PostProductRequest } from "@/dtos/productsDTO";
+import { GetProductByIdResponse } from "@/services/products";
+import { PaymentMethodsPtBrNames, PaymentMethodsResponse } from "@/dtos/productsDTO";
 
-const PaymentArray = [
-  { name: 'boleto', icon: Barcode, title: 'Boleto' },
-  { name: 'pix', icon: QrCode, title: 'Pix' },
-  { name: 'cash', icon: Money, title: 'Dinheiro' },
-  { name: 'card', icon: CreditCard, title: 'Cartão de Crédito' },
-  { name: 'deposit', icon: Bank, title: 'Deposito Bancário' },
-]
+type PaymentNamesProps = {
+  [key: string]: PaymentMethodsPtBrNames
+}
 
-export type DetailsObjProps = {
+export type ProductDetailsProps = {
   user: {
     name: string
     avatar: string
   }
-  images: { uri: string }[]
-} & PostProductRequest
+  price: string
+  images: {
+    uri: string
+  }[]
+  is_active?: boolean
+} & Omit<GetProductByIdResponse,
+  'price' | 'user_id' | 'id' | 'product_images' | 'user' | 'is_active'
+>
 
 type Props = {
-  adDetails: DetailsObjProps
-  disabledAd?: boolean
+  product: ProductDetailsProps
   children?: React.ReactNode
 }
 
-export function Details({
-  adDetails: {
-    user,
-    images,
-    name,
-    description,
-    is_new,
-    price,
-    accept_trade,
-    payment_methods
-  },
-  disabledAd,
-  children
-}: Props) {
-  const [RenderPaymentArray, setRenderPaymentArray] = useState<typeof PaymentArray>([])
-  const avatar = `${api.defaults.baseURL}/images/${user.avatar}`
+const PaymentIcons = {
+  boleto: Barcode,
+  pix: QrCode,
+  cash: Money,
+  card: CreditCard,
+  deposit: Bank,
+}
 
-  useEffect(() => {
-    setRenderPaymentArray(PaymentArray.filter(payObj => {
-      return payment_methods.includes(payObj.name as PaymentMethods)
-    }))
-  }, [payment_methods])
+export const PaymentNames: PaymentNamesProps = {
+  boleto: 'Boleto',
+  pix: 'Pix',
+  cash: 'Dinheiro',
+  card: 'Cartão de Crédito',
+  deposit: 'Depósito Bancário',
+}
 
+export function Details({ product, children }: Props) {
   return (
     <ScrollView
       style={styles.content}
       showsVerticalScrollIndicator={false}
     >
       <Carrosel
-        images={images}
-        disabledAd={disabledAd}
+        images={product.images}
+        disabledAd={product.is_active === undefined ? false : !product.is_active}
       />
 
       <View style={styles.info}>
 
         <View style={styles.user}>
-          <Image source={{ uri: avatar }} style={styles.avatar} />
+          <Image source={{ uri: product.user.avatar }} style={styles.avatar} />
 
           <Text style={styles.username}>
-            {user.name}
+            {product.user.name}
           </Text>
         </View>
 
         <View style={styles.column}>
           <Text style={styles.tag}>
-            {is_new ? 'Novo' : 'Usado'}
+            {product.is_new ? 'Novo' : 'Usado'}
           </Text>
 
           <View style={styles.titleContainer}>
             <Text style={styles.title}>
-              {name}
+              {product.name}
             </Text>
 
             <Text style={styles.price}>R${' '}
               <Text style={styles.priceValue}>
-                {(price / 100).toLocaleString('pt-BR', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2
-                })}
+                {product.price}
               </Text>
             </Text>
           </View>
 
           <Text style={styles.descText}>
-            {description}
+            {product.description}
           </Text>
         </View>
 
@@ -111,7 +102,7 @@ export function Details({
             <Text style={styles.subTitle}>Aceita Troca?</Text>
 
             <Text style={styles.text}>
-              {accept_trade ? 'Sim' : 'Não'}
+              {product.accept_trade ? 'Sim' : 'Não'}
             </Text>
           </View>
 
@@ -119,18 +110,9 @@ export function Details({
             <Text style={styles.subTitle}>Meios de pagamento</Text>
 
             <View style={styles.paymentBox}>
-              {RenderPaymentArray.map(({ icon: Icon, title }) => (
-                <View style={styles.line} key={title}>
-                  <Icon
-                    fill={Colors.gray[200]}
-                    height={18}
-                    width={18}
-                  />
-                  <Text style={styles.text}>
-                    {title}
-                  </Text>
-                </View>
-              ))}
+              <PaymentSection
+                payment_methods={product.payment_methods}
+              />
             </View>
 
           </View>
@@ -140,6 +122,25 @@ export function Details({
       </View>
     </ScrollView>
   )
+}
+
+function PaymentSection({ payment_methods }: PaymentMethodsResponse) {
+  return payment_methods.map(({ key, name }) => {
+    const Icon = PaymentIcons[key]
+
+    return (
+      <View style={styles.line} key={key}>
+        <Icon
+          fill={Colors.gray[200]}
+          height={18}
+          width={18}
+        />
+        <Text style={styles.text}>
+          {name}
+        </Text>
+      </View>
+    )
+  })
 }
 
 const text = {

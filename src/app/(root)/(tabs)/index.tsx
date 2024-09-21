@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useState } from "react";
 import { router, useFocusEffect } from "expo-router";
 import { Image, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -8,31 +8,55 @@ import Plus from "@/assets/icons/Plus";
 import Colors from "@/constants/Color";
 import Fonts from "@/constants/Fonts";
 
+import { fmtValueToImageUriRequest } from "@/utils/dataTransform";
+
 import { Search } from "@/components/Search";
 import { Button } from "@/components/base/Button";
-import { List } from "@/components/List";
+import { List, ListRequiredProps } from "@/components/List";
 import { InfoCard } from "@/components/InfoCard";
 
-import { useAuth } from "@/hooks/useAuth";
+import type { UserDTO } from "@/dtos/userDTO";
 
-import { api } from "@/services/api";
-import { getProducts } from "@/services/products";
+import { useAuth } from "@/hooks/useAuth";
+import { getProducts, GetProductsParams } from "@/services/products";
 
 export default function Home() {
-  const { user } = useAuth()
+  const user = useAuth().user as UserDTO
 
-  const avatar = `${api.defaults.baseURL}/images/${user?.avatar}`
+  const [products, setProducts] = useState<ListRequiredProps[]>([])
+  const [isFetchingData, setIsLoadingProducts] = useState(true)
+
+  const avatar = fmtValueToImageUriRequest(user?.avatar)
+
+  async function fetchProducts(params?: GetProductsParams) {
+    try {
+      setIsLoadingProducts(true)
+
+      const data = await getProducts(params)
+
+      setProducts(data)
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoadingProducts(false)
+    }
+  }
 
   useFocusEffect(useCallback(() => {
-    getProducts() // TODO this
+    fetchProducts()
   }, []))
 
   return (
     <List
-      data={[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}
-      onPressCard={(id) => router.navigate(`/${id}`)}
+      data={isFetchingData ? [] : products}
+      onPressCard={(id) => router.navigate({
+        pathname: '/[product-id]',
+        params: { "product-id": id }
+      })}
+      isFetchingProducts={isFetchingData}
       style={styles.contentContainer}
-      ListHeaderComponent={() => (
+      ListHeaderComponent={(
         <View style={styles.headerContainer}>
           <SafeAreaView style={styles.header}>
 
@@ -43,7 +67,9 @@ export default function Home() {
               />
 
               <Text style={styles.welcomeText}>Boas vindas,{" \n"}
-                <Text style={styles.welcomeBold}>{user?.name}!</Text>
+                <Text style={styles.welcomeBold}>
+                  {user?.name}!
+                </Text>
               </Text>
             </View>
 

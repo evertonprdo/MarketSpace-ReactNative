@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
 import { z } from "zod";
 
+import { brMonetaryRegExp } from "@/utils/dataTransform";
+
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
@@ -14,9 +16,6 @@ import { Toggle } from "@/components/base/Toggle";
 import { FormInput } from "@/components/Form/Input";
 import { TextErr } from "@/components/Form/TextErr";
 import { FormPaymentSection } from "@/components/Form/PaymentSection";
-
-// 1000,00 || 1.000,00 || 1000
-const brMonetaryRegExp = /^(?:\d{1,3}(?:\.\d{3})*|\d+)(?:,\d{2})?$/
 
 const adFormSchema = z.object({
   images: z.array(
@@ -57,7 +56,7 @@ type Props = {
   }
 }
 
-export const FormAd = forwardRef<FormAdRef, Props>(({ onSubmit, initValues: initialValues }, ref) => {
+export const FormProduct = forwardRef<FormAdRef, Props>(({ onSubmit, initValues: initialValues }, ref) => {
   const { control, handleSubmit } = useForm<FormAdProps>({
     defaultValues: initialValues ?? {
       images: [],

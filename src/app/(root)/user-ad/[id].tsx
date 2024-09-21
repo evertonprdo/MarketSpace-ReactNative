@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft";
@@ -8,34 +9,61 @@ import Trash from "@/assets/icons/Trash";
 
 import Fonts from "@/constants/Fonts";
 
-import { Button } from "@/components/base/Button";
-import { Details, DetailsObjProps } from "@/components/Details";
-import { Header } from "@/components/Header";
-import { Modal } from "@/components/base/Modal";
+import { Details, ProductDetailsProps } from "@/components/Details";
 import { PressableIcon } from "@/components/base/PressableIcon";
-import { router } from "expo-router";
 import { MessageBox } from "@/components/MessageBox";
+import { Loading } from "@/components/base/Loading";
+import { Button } from "@/components/base/Button";
+import { Modal } from "@/components/base/Modal";
+import { Header } from "@/components/Header";
+
+import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dataTransform";
+import { getProductById } from "@/services/products";
 
 export default function UserAdDetails() {
-  const [adDetails, setAdDetails] = useState<DetailsObjProps>({
-    user: {
-      avatar: 'asd',
-      name: 'Maria Gomes'
-    },
-    images: testArray,
-    name: 'Tênis vermelho',
-    description: 'Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. ',
-    accept_trade: true,
-    is_new: true,
-    payment_methods: ['boleto', 'card', 'cash', 'deposit', 'pix'],
-    price: 15049
-  })
+  const params = useLocalSearchParams();
+  const productId = params.id as string
 
-  const [isDisabled, setIsDisabled] = useState(false)
+  const [product, setProduct] = useState<ProductDetailsProps>()
+  const [isFetchingProduct, setIsFetchingProduct] = useState(true)
+
   const [showModal, setShowModal] = useState(false)
 
-  const dinamicText = isDisabled ? 'Reativar' : 'Desativar'
-  const btnVariant = isDisabled ? 'blue' : 'black'
+  function handleConfirmPathProduct() { }
+
+  async function fetchProduct() {
+    try {
+      setIsFetchingProduct(true)
+      const { product_images, user, price, ...data } = await getProductById(productId)
+
+      const images = product_images.map(img => ({
+        uri: fmtValueToImageUriRequest(img.path)
+      }))
+
+      setProduct({
+        ...data,
+        images,
+        user: {
+          name: user.name,
+          avatar: fmtValueToImageUriRequest(user.avatar),
+        },
+        price: formatCentsToBRLCurrency(price)
+      })
+
+    } catch (error: any) {
+      console.log(error)
+
+    } finally {
+      setIsFetchingProduct(false)
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchProduct()
+  }, []))
+
+  if (isFetchingProduct) return <Loading />
+  if (!product) return router.back()
 
   return (
     <View style={styles.flex}>
@@ -60,23 +88,23 @@ export default function UserAdDetails() {
       />
 
       <Details
-        adDetails={adDetails}
-        disabledAd={isDisabled}
+        product={product}
+        key={'UserProductDetails'}
       >
         <View style={styles.buttonsCotainer}>
-          {isDisabled ? (
+          {product.is_active ? (
             <Button
-              key={'btnBlue'}
-              title={'Reativar anúncio'}
-              variant={'blue'}
+              key={'btnGray'}
+              title={'Desativar anúncio'}
+              variant={'black'}
               icon={Power}
               onPress={() => setShowModal(true)}
             />
           ) : (
             <Button
-              key={'btnGray'}
-              title={'Desativar anúncio'}
-              variant={'black'}
+              key={'btnBlue'}
+              title={'Reativar anúncio'}
+              variant={'blue'}
               icon={Power}
               onPress={() => setShowModal(true)}
             />
@@ -95,15 +123,15 @@ export default function UserAdDetails() {
       >
         <MessageBox
           title="Visibilidade do anúncio"
-          btnVariant={{ confirm: btnVariant }}
+          btnVariant={{ confirm: product.is_active ? 'black' : 'blue' }}
           onCancel={() => setShowModal(false)}
-          onConfirm={() => { setShowModal(false); setIsDisabled(!isDisabled) }}
+          onConfirm={handleConfirmPathProduct}
         >
-          Você está prestes a
+          Você está prestes a{' '}
           <Text style={styles.modalBold}>
-            {` ${dinamicText} `}
+            {product.is_active ? 'Desativar' : 'Reativar'}
           </Text>
-          a visibilidade do seu anúncio, tem certeza que deseja fazer isso?
+          {' '}a visibilidade do seu anúncio, tem certeza que deseja fazer isso?
         </MessageBox>
       </Modal>
     </View>
@@ -136,9 +164,3 @@ const styles = StyleSheet.create({
     textTransform: 'lowercase'
   },
 })
-
-const testArray = [
-  { uri: 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg' },
-  { uri: 'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
-  { uri: 'https://img-cdn.pixlr.com/image-generator/history/65ba5701b4f4f4419f746bc3/806ecb58-167c-4d20-b658-a6a6b2f221e9/medium.webp' }
-]

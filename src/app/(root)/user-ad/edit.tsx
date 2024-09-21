@@ -2,22 +2,23 @@ import { useRef, useState } from "react";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import ArrowLeft from "@/assets/icons/ArrowLeft";
+import { formatCentsToBRLCurrency, parseBRLCurrencyToCents } from "@/utils/dataTransform";
 
+import ArrowLeft from "@/assets/icons/ArrowLeft";
 import Colors from "@/constants/Color";
 
 import { Header } from "@/components/Header";
-import { Details, DetailsObjProps } from "@/components/Details";
+import { Details, ProductDetailsProps } from "@/components/Details";
 import { Button } from "@/components/base/Button";
 import { AdPreview } from "@/components/AdPreview";
 import { PressableIcon } from "@/components/base/PressableIcon";
-import { FormAd, FormAdProps, FormAdRef } from "@/components/Form/Ad";
+import { FormProduct, FormAdProps, FormAdRef } from "@/components/Form/Product";
 
 export default function EditAd() {
   const [showModal, setShowModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false)
 
-  const [adDetails, setAdDetails] = useState<DetailsObjProps>({
+  const [adDetails, setAdDetails] = useState<ProductDetailsProps>({
     user: {
       avatar: 'asda',
       name: 'Maria Gomes'
@@ -30,13 +31,10 @@ export default function EditAd() {
     payment_methods: ['boleto', 'card', 'cash', 'deposit', 'pix'],
     price: 15049
   })
-  
+
   const initValues = {
     ...adDetails,
-    price: (adDetails.price / 100).toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    })
+    price: formatCentsToBRLCurrency(adDetails.price)
   }
 
   const formAdRef = useRef<FormAdRef>(null)
@@ -50,7 +48,7 @@ export default function EditAd() {
   function handleNext(data: FormAdProps) {
     const { price, ...formData } = data
 
-    const parsedPrice = Number(price.replace('.', '').replace(',', '.')) * 100
+    const parsedPrice = parseBRLCurrencyToCents(price)
 
     setAdDetails({
       ...formData,
@@ -82,7 +80,7 @@ export default function EditAd() {
           }
         />
 
-        <FormAd
+        <FormProduct
           ref={formAdRef}
           onSubmit={handleNext}
           initValues={initValues}
@@ -111,8 +109,9 @@ export default function EditAd() {
         onCancel={() => setShowModal(false)}
         onConfirm={() => setIsLoading(true)}
       >
-        <Details 
-          adDetails={adDetails}
+        <Details
+          product={adDetails}
+          key={'ProductEditModal'}
         />
       </AdPreview>
     </View>

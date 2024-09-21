@@ -1,4 +1,5 @@
-import { router } from "expo-router";
+import { useCallback, useState } from "react";
+import { router, useFocusEffect } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
 import Plus from "@/assets/icons/Plus";
@@ -9,9 +10,95 @@ import Fonts from "@/constants/Fonts";
 import { Select } from "@/components/base/Select";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { Header } from "@/components/Header";
-import { List } from "@/components/List";
+import { List, ListRequiredProps } from "@/components/List";
+import { Loading } from "@/components/base/Loading";
+
+import { useAuth } from "@/hooks/useAuth";
+import { getUserProducts } from "@/services/users";
+
+import type { UserDTO } from "@/dtos/userDTO";
 
 export default function UserAds() {
+  const user = useAuth().user as UserDTO
+
+  const [prodCount, setProdCount] = useState({ all: 0, active: 0, inactive: 0 })
+  const [isLoadingProducts, setIsLoadingProducts] = useState(true)
+  const [diseabledProductFilter, setDisabledProductStatus] = useState<keyof typeof prodCount>('all')
+
+  const [products, setProducts] = useState<ListRequiredProps[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<ListRequiredProps[]>([])
+
+  function handleOnSelectionChange(val: string | null) {
+    if (val === diseabledProductFilter)
+      return
+
+    if (val === null) return
+
+    setDisabledProductStatus(val as keyof typeof prodCount)
+    filterProducts(val)
+  }
+
+  function filterProducts(key: string | null) {
+    if (key === 'all') {
+      return setFilteredProducts(products)
+    }
+
+    if (key === 'active') {
+      const actArray = products.filter(prod => prod.is_active)
+
+      if (prodCount.active !== actArray.length) {
+        setProdCount({
+          ...prodCount,
+          active: actArray.length ?? 0
+        })
+      }
+      return setFilteredProducts(actArray)
+    }
+
+    const inactArray = products.filter(prod => !prod.is_active)
+
+    if (prodCount.inactive !== inactArray.length) {
+      setProdCount({
+        ...prodCount,
+        inactive: inactArray.length
+      })
+    }
+    setFilteredProducts(inactArray)
+  }
+
+  async function fetchProducts() {
+    try {
+      setIsLoadingProducts(true)
+
+      const data = await getUserProducts()
+
+      const prodArray = data.map(({ user_id, payment_methods, accept_trade, description, ...rest }) => {
+        return {
+          ...rest,
+          user: {
+            avatar: user.avatar
+          }
+        }
+      })
+
+      setProducts(prodArray)
+      setFilteredProducts(prodArray)
+      setProdCount({
+        ...prodCount,
+        all: prodArray.length
+      })
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setIsLoadingProducts(false)
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    setDisabledProductStatus('all')
+    fetchProducts()
+  }, []))
+
   return (
     <View style={styles.container}>
       <Header
@@ -28,19 +115,27 @@ export default function UserAds() {
       />
 
       <View style={styles.options}>
-        <Text style={styles.optionsTitle}>9 anúncios</Text>
+        <Text style={styles.optionsTitle}>
+          {prodCount[diseabledProductFilter]} anúncios
+        </Text>
 
-        <Select selected={'all'} onChangeSelected={() => null}>
+        <Select
+          selected={diseabledProductFilter}
+          onChangeSelected={handleOnSelectionChange}
+        >
           <Select.Option name="all">Todos</Select.Option>
           <Select.Option name="active">Ativos</Select.Option>
           <Select.Option name="inactive">Inativos</Select.Option>
         </Select>
       </View>
 
-      <List
-        data={[0, 1, 2, 3, 4, 5, 6]}
-        onPressCard={(id) => router.navigate(`/user-ad/${id}`)}
-      />
+      {isLoadingProducts
+        ? <Loading />
+        : <List
+          data={filteredProducts}
+          onPressCard={(id) => router.navigate(`/user-ad/${id}`)}
+        />
+      }
     </View>
   )
 }

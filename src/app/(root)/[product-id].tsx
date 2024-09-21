@@ -1,4 +1,5 @@
-import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { StyleSheet, Text, View } from "react-native";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft";
@@ -10,25 +11,52 @@ import Fonts from "@/constants/Fonts";
 import { Header } from "@/components/Header";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { Button } from "@/components/base/Button";
-import { Details, DetailsObjProps } from "@/components/Details";
-import { useState } from "react";
+import { Details, ProductDetailsProps } from "@/components/Details";
+import { Loading } from "@/components/base/Loading";
+
+import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dataTransform";
+import { getProductById } from "@/services/products";
 
 export default function AdDetails() {
   const params = useLocalSearchParams();
+  const productId = params['product-id'] as string
 
-  const [adDetails, setAdDetails] = useState<DetailsObjProps>({
-    user: {
-      avatar: 'asd',
-      name: 'Maria Gomes'
-    },
-    images: testArray,
-    name: 'Tênis vermelho',
-    description: 'Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. ',
-    accept_trade: true,
-    is_new: true,
-    payment_methods: ['boleto', 'card', 'cash', 'deposit', 'pix'],
-    price: 15049
-  })
+  const [product, setProduct] = useState<ProductDetailsProps>()
+  const [isFetchingProduct, setIsFetchingProduct] = useState(true)
+
+  async function fetchProduct() {
+    try {
+      setIsFetchingProduct(true)
+      const { id, user_id, product_images, user, price, ...data } = await getProductById(productId)
+
+      const images = product_images.map(img => ({
+        uri: fmtValueToImageUriRequest(img.path)
+      }))
+
+      setProduct({
+        ...data,
+        images,
+        user: {
+          name: user.name,
+          avatar: fmtValueToImageUriRequest(user.avatar),
+        },
+        price: formatCentsToBRLCurrency(price)
+      })
+
+    } catch (error: any) {
+      console.log(error)
+
+    } finally {
+      setIsFetchingProduct(false)
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchProduct()
+  }, []))
+
+  if (isFetchingProduct) return <Loading />
+  if (!product) return router.back()
 
   return (
     <View style={styles.container}>
@@ -45,7 +73,7 @@ export default function AdDetails() {
       />
 
       <Details
-        adDetails={adDetails}
+        product={product}
       />
 
       <View style={styles.footer}>
@@ -53,10 +81,7 @@ export default function AdDetails() {
         <Text style={styles.footerText}>
           R${' '}
           <Text style={styles.footerPrice}>
-            {(adDetails.price / 100).toLocaleString('pt-BR', {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2
-            })}
+            {product.price}
           </Text>
         </Text>
 
@@ -97,9 +122,3 @@ const styles = StyleSheet.create({
     fontSize: Fonts.FontSize.xxl
   }
 })
-
-const testArray = [
-  { uri: 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg' },
-  { uri: 'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
-  { uri: 'https://img-cdn.pixlr.com/image-generator/history/65ba5701b4f4f4419f746bc3/806ecb58-167c-4d20-b658-a6a6b2f221e9/medium.webp' }
-]

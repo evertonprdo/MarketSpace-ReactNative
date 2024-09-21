@@ -6,29 +6,36 @@ export type ProductCommonResponseProps = {
 }
 
 export type PaymentMethods = 'boleto' | 'pix' | 'cash' | 'card' | 'deposit'
+export type PaymentMethodsPtBrNames = 'Depósito Bancário' | 'Pix' | 'Dinheiro' | 'Boleto' | 'Cartão de Crédito'
 
-export type GetProductsResponse = {
-  id: string,
+export type PaymentMethodsResponse = {
   payment_methods: {
     key: PaymentMethods
-    name: string
+    name: PaymentMethodsPtBrNames
   }[]
-  product_images: {
-    path: string,
-    id: string
-  }[]
-  user: {
-    avatar: string
-  }
-} & ProductCommonResponseProps
-
-export type PostProductRequest = {
-  description: string,
-  payment_methods: PaymentMethods[]
-} & ProductCommonResponseProps
+}
 
 export type PostImageProps = {
   name: string
   uri: string
   type: string
 }
+
+export type ProductImageResponse = {
+  product_images: {
+    path: string,
+    id: string
+  }[]
+}
+
+export type GetProductsResponse = {
+  id: string,
+  user: {
+    avatar: string
+  }
+} & ProductCommonResponseProps & ProductImageResponse & PaymentMethodsResponse
+
+export type PostProductRequest = {
+  description: string,
+  payment_methods: PaymentMethods[]
+} & ProductCommonResponseProps

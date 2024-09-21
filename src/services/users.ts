@@ -1,3 +1,4 @@
+import { PaymentMethodsResponse, ProductCommonResponseProps, ProductImageResponse } from "@/dtos/productsDTO"
 import { api } from "./api"
 
 type PostUserRequest = {
@@ -11,6 +12,13 @@ type PostUserRequest = {
   tel: string,
   password: string
 }
+
+export type GetUserProductsResponse = {
+  id: string
+  description: string
+  user_id: string,
+  is_active: boolean,
+} & ProductCommonResponseProps & ProductImageResponse & PaymentMethodsResponse
 
 const prefix = '/users'
 
@@ -29,6 +37,17 @@ export async function postUser({ avatar, email, name, password, tel }: PostUserR
         'Content-Type': 'multipart/form-data'
       }
     })
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getUserProducts() {
+  try {
+    const { data } = await api.get<GetUserProductsResponse[]>(`${prefix}/products`)
+
+    return data
 
   } catch (error) {
     throw error

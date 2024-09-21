@@ -4,13 +4,12 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod"
 
+import { BrazilianPhoneRegExp } from "@/utils/dataTransform";
+
 import { PasswordButton } from "@/components/PasswordButton";
-import { Button } from "@/components/base/Button";
 import { ImagePickerProfile } from "@/components/ImagePicker/Profile";
 import { FormInput } from "@/components/Form/Input";
-
-// (XX) XXXX-XXXX || (XX) 9XXXX-XXXX
-const BrazilianPhoneRegExp = /^\([1-9]{2}\) (?:[2-8]|9[0-9])[0-9]{3}\-[0-9]{4}$/ 
+import { Button } from "@/components/base/Button";
 
 export const signUpSchema = z.object({
   avatar: z.object({

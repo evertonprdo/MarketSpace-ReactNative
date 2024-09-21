@@ -1,18 +1,21 @@
 import { GestureResponderEvent, Image, Pressable, PressableProps, StyleSheet, Text, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withSequence, withTiming } from "react-native-reanimated";
 
-import CardPhoto from "@/assets/cardPhoto.png"
-import ProfilePhoto from "@/assets/profilePhoto.jpeg"
-
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-type Props = PressableProps & {
-  title: string
+import type { ProductCommonResponseProps } from "@/dtos/productsDTO";
+
+export type CardProductProps = {
+  avatar: string
+  disabledProduct?: boolean
   price: string
-  isNewProduct: boolean
-  isAdDisable?: boolean
-}
+  thumbnail: string
+} & Omit<
+  ProductCommonResponseProps, 'accept_trade' | 'price'
+>
+
+type Props = PressableProps & CardProductProps
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
@@ -21,14 +24,14 @@ const animConfig = {
   easing: Easing.out(Easing.poly(4)),
 }
 
-export function AdCard({ onPress, isNewProduct, isAdDisable, style, ...props }: Props) {
+export function AdCard({ onPress, is_new, disabledProduct, style, avatar, name, price, thumbnail, ...props }: Props) {
   const scale = useSharedValue(1);
 
-  const bgTagColor = isNewProduct
+  const bgTagColor = is_new
     ? Colors.blue
     : Colors.gray[200]
 
-  const descText = isAdDisable
+  const descText = disabledProduct
     ? [Colors.gray[400], Fonts.FontFamily.regular]
     : [Colors.gray[200], Fonts.FontFamily.bold]
 
@@ -57,23 +60,23 @@ export function AdCard({ onPress, isNewProduct, isAdDisable, style, ...props }: 
 
       <View style={styles.banner}>
         <Image
-          source={CardPhoto}
+          source={{uri: thumbnail}}
           style={styles.image}
           resizeMode="cover"
         />
 
         <View style={styles.absoluteContainer}>
           <Image
-            source={ProfilePhoto}
+            source={{uri: avatar}}
             style={styles.profileImg}
           />
 
           <Text style={[styles.tag, { backgroundColor: bgTagColor }]}>
-            Novo
+            {is_new ? 'Novo' : 'Usado'}
           </Text>
         </View>
 
-        {isAdDisable && (
+        {disabledProduct && (
           <View style={styles.disabledAdView}>
             <Text style={styles.disabledAdText}>
               Anúncio desativado
@@ -84,7 +87,7 @@ export function AdCard({ onPress, isNewProduct, isAdDisable, style, ...props }: 
 
       <View style={styles.details}>
         <Text style={[styles.title, { color: descText[0] }]}>
-          Tênis vermelho
+          {name}
         </Text>
 
         <Text style={[
@@ -94,7 +97,7 @@ export function AdCard({ onPress, isNewProduct, isAdDisable, style, ...props }: 
           <Text style={styles.currency}>
             R${" "}
           </Text>
-          59,90
+          {price}
         </Text>
       </View>
     </AnimatedPressable>

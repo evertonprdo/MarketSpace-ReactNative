@@ -1,5 +1,6 @@
-import type { GetProductsResponse, PaymentMethods, PostImageProps, PostProductRequest } from "@/dtos/productsDTO"
+import type { GetProductsResponse, PaymentMethods, PaymentMethodsResponse, PostImageProps, PostProductRequest, ProductCommonResponseProps, ProductImageResponse } from "@/dtos/productsDTO"
 import { api } from "./api"
+import { UserDTO } from "@/dtos/userDTO"
 
 type PostProductResponse = Omit<PostProductRequest, 'payment_methods'> & {
   id: string,
@@ -17,6 +18,16 @@ export type GetProductsParams = {
   is_new?: boolean
   payment_methods?: PaymentMethods[]
 }
+
+export type GetProductByIdResponse = {
+  id: string
+  user: Omit<UserDTO, 'id'>
+  description: string
+  is_active: boolean
+  user_id: string
+} & ProductCommonResponseProps
+  & PaymentMethodsResponse
+  & ProductImageResponse
 
 const prefix = '/products'
 
@@ -56,10 +67,20 @@ export async function postProductImages({ images, product_id }: PostProductImage
 
 export async function getProducts(params?: GetProductsParams) {
   try {
-    const { data } = await api.get<GetProductsResponse>(prefix, { params })
-
+    const { data } = await api.get<GetProductsResponse[]>(prefix, { params })
     return data
 
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function getProductById(id: string) {
+  try {
+    const { data } = await api.get<GetProductByIdResponse>(`${prefix}/${id}`)
+
+    return data
+    
   } catch (error) {
     throw error
   }
