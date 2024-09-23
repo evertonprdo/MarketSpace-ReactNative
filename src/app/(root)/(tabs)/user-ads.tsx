@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { getUserProducts } from "@/services/users";
 
 import type { UserDTO } from "@/dtos/userDTO";
+import { storageUserProductInfoSave } from "@/storage/storageUserProducts";
 
 export default function UserAds() {
   const user = useAuth().user as UserDTO
@@ -77,15 +78,24 @@ export default function UserAds() {
           ...rest,
           user: {
             avatar: user.avatar
-          }
+          },
         }
       })
 
+      const activeProductsAmount = prodArray.reduce((count, obj) => {
+        return obj.is_active ? count + 1 : count
+      }, 0)
+
       setProducts(prodArray)
       setFilteredProducts(prodArray)
+      
       setProdCount({
         ...prodCount,
         all: prodArray.length
+      })
+
+      storageUserProductInfoSave({
+        activeProductsAmount
       })
     } catch (error) {
       console.log(error)

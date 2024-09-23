@@ -9,11 +9,12 @@ import Fonts from "@/constants/Fonts";
 type Props = PressableProps & {
   label: string
   value?: boolean
+  onValueChange?: (val: boolean) => void
 }
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable)
 
-export function Tag({ label, value, ...props }: Props) {
+export function Tag({ label, value, onValueChange, ...props }: Props) {
   const isActive = useSharedValue(false);
 
   isActive.value = value ?? false
@@ -46,6 +47,7 @@ export function Tag({ label, value, ...props }: Props) {
     <AnimatedPressable
       style={[animContainerStyle, styles.container]}
       hitSlop={8}
+      onPress={() => onValueChange && onValueChange(!value)}
       {...props}
     >
       <Animated.Text style={[styles.text, animTextStyle]}>

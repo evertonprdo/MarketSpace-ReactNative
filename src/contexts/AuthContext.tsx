@@ -6,6 +6,8 @@ import { api } from "@/services/api";
 import { postSession } from "@/services/sessions";
 import { storageAuthTokenGet, storageAuthTokenRemove, storageAuthTokenSave } from "@/storage/storageAuthToken";
 import { storageUserGet, storageUserRemove, storageUserSave } from "@/storage/storageUser";
+import { getUserProducts } from "@/services/users";
+import { storageUserProductInfoSave } from "@/storage/storageUserProducts";
 
 export type AuthContextDataProps = {
   user: UserDTO | null
@@ -49,6 +51,14 @@ export function AuthContextProvider({ children }: PropsWithChildren) {
         data.token,
         data.refresh_token
       )
+
+      const userProducts = await getUserProducts()
+      
+      const activeProductsAmount = userProducts.reduce((some, obj) => {
+        return obj.is_active ? some + 1 : some
+      }, 0)
+
+      await storageUserProductInfoSave({ activeProductsAmount })
 
       if (router.canDismiss()) {
         router.dismissAll()

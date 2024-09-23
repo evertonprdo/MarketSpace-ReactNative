@@ -29,6 +29,10 @@ export type GetProductByIdResponse = {
   & PaymentMethodsResponse
   & ProductImageResponse
 
+type RemoveImagesRequest = {
+  productImagesIds: string[]
+}
+
 const prefix = '/products'
 
 export async function postProduct(newProduct: PostProductRequest) {
@@ -40,25 +44,6 @@ export async function postProduct(newProduct: PostProductRequest) {
     }
 
     return data
-
-  } catch (error) {
-    throw error
-  }
-}
-
-export async function postProductImages({ images, product_id }: PostProductImagesRequest) {
-  try {
-    const productImagesForm = new FormData()
-
-    productImagesForm.append("product_id", product_id)
-
-    images.forEach(img => productImagesForm.append("images", img as unknown as Blob))
-
-    api.post(`${prefix}/images`, productImagesForm, {
-      headers: {
-        'Content-Type': 'multipart/form-data'
-      }
-    })
 
   } catch (error) {
     throw error
@@ -80,7 +65,64 @@ export async function getProductById(id: string) {
     const { data } = await api.get<GetProductByIdResponse>(`${prefix}/${id}`)
 
     return data
-    
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function putProduct(id: string, product: PostProductRequest) {
+  try {
+    await api.put(`${prefix}/${id}`, product)
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function patchProductActiveStatus(id: string, value: boolean) {
+  try {
+    await api.patch(`${prefix}/${id}`, { is_active: value })
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteProduct(id: string) {
+  try {
+    await api.delete(`${prefix}/${id}`)
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function postProductImages({ images, product_id }: PostProductImagesRequest) {
+  try {
+    const productImagesForm = new FormData()
+
+    productImagesForm.append("product_id", product_id)
+
+    images.forEach(img => productImagesForm.append("images", img as unknown as Blob))
+
+    await api.post(`${prefix}/images`, productImagesForm, {
+      headers: {
+        'Content-Type': 'multipart/form-data'
+      }
+    })
+
+  } catch (error) {
+    throw error
+  }
+}
+
+export async function deleteProductImages(imagesIds: RemoveImagesRequest) {
+  try {
+    await api.delete(`${prefix}/images`, {
+      data: imagesIds
+    })
+
   } catch (error) {
     throw error
   }

@@ -18,7 +18,13 @@ import { Modal } from "@/components/base/Modal";
 import { Header } from "@/components/Header";
 
 import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dataTransform";
-import { getProductById } from "@/services/products";
+import { deleteProduct, getProductById, patchProductActiveStatus } from "@/services/products";
+
+enum MODAL {
+  NONE = 0,
+  PATCH_MESSAGE = 1,
+  DELETE_MESSAGE = 2
+}
 
 export default function UserAdDetails() {
   const params = useLocalSearchParams();
@@ -27,9 +33,20 @@ export default function UserAdDetails() {
   const [product, setProduct] = useState<ProductDetailsProps>()
   const [isFetchingProduct, setIsFetchingProduct] = useState(true)
 
-  const [showModal, setShowModal] = useState(false)
+  const [showModal, setShowModal] = useState(MODAL.NONE)
 
-  function handleConfirmPathProduct() { }
+  async function handleConfirmPatchProduct() {
+    try {
+      await patchProductActiveStatus(productId, !product?.is_active)
+
+      fetchProduct();
+
+    } catch (error) {
+      console.log(error)
+    } finally {
+      setShowModal(MODAL.NONE)
+    }
+  }
 
   async function fetchProduct() {
     try {
@@ -58,6 +75,17 @@ export default function UserAdDetails() {
     }
   }
 
+  async function handleDeleteProduct() {
+    try {
+      await deleteProduct(productId)
+      router.dismissAll()
+
+    } catch (error) {
+      console.log(error)
+      setShowModal(MODAL.NONE)
+    }
+  }
+
   useFocusEffect(useCallback(() => {
     fetchProduct()
   }, []))
@@ -82,7 +110,10 @@ export default function UserAdDetails() {
             icon={PencilSimpleLine}
             fill={tint}
             size={size}
-            onPress={() => router.navigate('/user-ad/edit')}
+            onPress={() => router.navigate({
+              pathname: '/user-ad/edit',
+              params: { id: productId }
+            })}
           />
         }
       />
@@ -98,7 +129,7 @@ export default function UserAdDetails() {
               title={'Desativar anúncio'}
               variant={'black'}
               icon={Power}
-              onPress={() => setShowModal(true)}
+              onPress={() => setShowModal(MODAL.PATCH_MESSAGE)}
             />
           ) : (
             <Button
@@ -106,32 +137,51 @@ export default function UserAdDetails() {
               title={'Reativar anúncio'}
               variant={'blue'}
               icon={Power}
-              onPress={() => setShowModal(true)}
+              onPress={() => setShowModal(MODAL.PATCH_MESSAGE)}
             />
           )}
           <Button
             title="Excluir anúncio"
             variant="gray"
             icon={Trash}
+            onPress={() => setShowModal(MODAL.DELETE_MESSAGE)}
           />
         </View>
       </Details>
 
       <Modal
-        visible={showModal}
+        visible={showModal === MODAL.PATCH_MESSAGE}
         contentContainerStyle={styles.modalContentContainer}
       >
         <MessageBox
           title="Visibilidade do anúncio"
           btnVariant={{ confirm: product.is_active ? 'black' : 'blue' }}
-          onCancel={() => setShowModal(false)}
-          onConfirm={handleConfirmPathProduct}
+          onCancel={() => setShowModal(MODAL.NONE)}
+          onConfirm={handleConfirmPatchProduct}
         >
           Você está prestes a{' '}
           <Text style={styles.modalBold}>
             {product.is_active ? 'Desativar' : 'Reativar'}
           </Text>
           {' '}a visibilidade do seu anúncio, tem certeza que deseja fazer isso?
+        </MessageBox>
+      </Modal>
+
+      <Modal
+        visible={showModal === MODAL.DELETE_MESSAGE}
+        contentContainerStyle={styles.modalContentContainer}
+      >
+        <MessageBox
+          title="Exclusão do anúncio"
+          btnVariant={{ confirm: 'black' }}
+          onCancel={() => setShowModal(MODAL.NONE)}
+          onConfirm={handleDeleteProduct}
+        >
+          Você está prestes a{' '}
+          <Text style={styles.modalBold}>
+            Excluir permanentemente
+          </Text>
+          {' '}o seu anúncio, tem certeza que deseja fazer isso?
         </MessageBox>
       </Modal>
     </View>

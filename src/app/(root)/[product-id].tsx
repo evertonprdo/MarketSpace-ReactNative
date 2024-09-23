@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
-import { StyleSheet, Text, View } from "react-native";
+import { Linking, StyleSheet, Text, View } from "react-native";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft";
 import Whatsapp from "@/assets/icons/Whatsapp";
@@ -16,13 +16,16 @@ import { Loading } from "@/components/base/Loading";
 
 import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dataTransform";
 import { getProductById } from "@/services/products";
+import { Modal } from "@/components/base/Modal";
+import { MessageBox } from "@/components/MessageBox";
 
 export default function AdDetails() {
   const params = useLocalSearchParams();
   const productId = params['product-id'] as string
 
-  const [product, setProduct] = useState<ProductDetailsProps>()
+  const [product, setProduct] = useState<ProductDetailsProps & { user: { tel: string } }>()
   const [isFetchingProduct, setIsFetchingProduct] = useState(true)
+  const [showModal, setShowModal] = useState(false)
 
   async function fetchProduct() {
     try {
@@ -39,6 +42,7 @@ export default function AdDetails() {
         user: {
           name: user.name,
           avatar: fmtValueToImageUriRequest(user.avatar),
+          tel: user.tel
         },
         price: formatCentsToBRLCurrency(price)
       })
@@ -49,6 +53,13 @@ export default function AdDetails() {
     } finally {
       setIsFetchingProduct(false)
     }
+  }
+
+  function handleOnConfirm() {
+    setShowModal(false)
+    const encodedText = encodeURIComponent(`Olá! Gostaria de saber mais sobre o *${product?.name}*, o item ainda está disponivel?`)
+
+    Linking.openURL(`https://wa.me/${product?.user.tel}?text=${encodedText}`)
   }
 
   useFocusEffect(useCallback(() => {
@@ -85,8 +96,30 @@ export default function AdDetails() {
           </Text>
         </Text>
 
-        <Button title="Entrar em contato" icon={Whatsapp} variant="blue" />
+        <Button
+          title="Entrar em contato"
+          icon={Whatsapp}
+          variant="blue"
+          onPress={() => setShowModal(true)}
+        />
       </View>
+
+      <Modal
+        visible={showModal}
+        contentContainerStyle={styles.modalContentContainer}
+      >
+        <MessageBox
+          title="Contatar vendedor"
+          onCancel={() => setShowModal(false)}
+          onConfirm={handleOnConfirm}
+        >
+          Você está prestes a{' '}
+          <Text style={styles.modalBold}>
+            entrar em contato
+          </Text>
+          {' '}com o anunciante, você será redirecionado para o Whatsapp do vendedor.
+        </MessageBox>
+      </Modal>
     </View>
   )
 }
@@ -120,5 +153,17 @@ const styles = StyleSheet.create({
   },
   footerPrice: {
     fontSize: Fonts.FontSize.xxl
-  }
+  },
+
+  modalContentContainer: {
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    paddingHorizontal: 24
+  },
+
+  modalBold: {
+    fontFamily: Fonts.FontFamily.bold,
+    textTransform: 'lowercase'
+  },
 })

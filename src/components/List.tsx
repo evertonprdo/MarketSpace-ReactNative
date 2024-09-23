@@ -50,9 +50,9 @@ export function List({ ListHeaderComponent, style, data, onPressCard, isFetching
           price={formatCentsToBRLCurrency(item.price)}
           is_new={item.is_new}
           thumbnail={fmtValueToImageUriRequest(item.product_images[0].path)}
-          disabled={item.is_active === undefined
-            ? false
-            : !item.is_active
+          isProductActive={item.is_active === undefined
+            ? true
+            : item.is_active
           }
           style={{ maxWidth: cardMaxWidth }}
           onPress={() => handleOnPressCard(item.id)}

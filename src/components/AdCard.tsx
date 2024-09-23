@@ -8,7 +8,7 @@ import type { ProductCommonResponseProps } from "@/dtos/productsDTO";
 
 export type CardProductProps = {
   avatar: string
-  disabledProduct?: boolean
+  isProductActive?: boolean
   price: string
   thumbnail: string
 } & Omit<
@@ -24,16 +24,16 @@ const animConfig = {
   easing: Easing.out(Easing.poly(4)),
 }
 
-export function AdCard({ onPress, is_new, disabledProduct, style, avatar, name, price, thumbnail, ...props }: Props) {
+export function AdCard({ onPress, is_new, isProductActive, style, avatar, name, price, thumbnail, ...props }: Props) {
   const scale = useSharedValue(1);
 
   const bgTagColor = is_new
     ? Colors.blue
     : Colors.gray[200]
 
-  const descText = disabledProduct
-    ? [Colors.gray[400], Fonts.FontFamily.regular]
-    : [Colors.gray[200], Fonts.FontFamily.bold]
+  const descText = isProductActive
+    ? [Colors.gray[200], Fonts.FontFamily.bold]
+    : [Colors.gray[400], Fonts.FontFamily.regular]
 
   const animStyles = useAnimatedStyle(() => ({
     transform: [{
@@ -60,14 +60,14 @@ export function AdCard({ onPress, is_new, disabledProduct, style, avatar, name, 
 
       <View style={styles.banner}>
         <Image
-          source={{uri: thumbnail}}
+          source={{ uri: thumbnail }}
           style={styles.image}
           resizeMode="cover"
         />
 
         <View style={styles.absoluteContainer}>
           <Image
-            source={{uri: avatar}}
+            source={{ uri: avatar }}
             style={styles.profileImg}
           />
 
@@ -76,7 +76,7 @@ export function AdCard({ onPress, is_new, disabledProduct, style, avatar, name, 
           </Text>
         </View>
 
-        {disabledProduct && (
+        {!isProductActive && (
           <View style={styles.disabledAdView}>
             <Text style={styles.disabledAdText}>
               Anúncio desativado

@@ -1,6 +1,7 @@
-import { UserDTO } from "@/dtos/userDTO";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
 import { USER_STORAGE } from "./storage.config";
+import type { UserDTO } from "@/dtos/userDTO";
 
 export async function storageUserSave({ id, name, avatar, tel }: UserDTO) {
   await AsyncStorage.setItem(
@@ -9,7 +10,7 @@ export async function storageUserSave({ id, name, avatar, tel }: UserDTO) {
       id,
       name,
       avatar,
-      tel
+      tel,
     })
   )
 }

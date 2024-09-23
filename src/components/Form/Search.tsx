@@ -1,6 +1,9 @@
 import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import Animated, { SlideInDown } from "react-native-reanimated";
+import { Controller, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 
 import Sliders from "@/assets/icons/Sliders";
 import MagnifyingGlass from "@/assets/icons/MagnifyingGlass";
@@ -9,27 +12,88 @@ import X from "@/assets/icons/X";
 import Fonts from "@/constants/Fonts";
 import Colors from "@/constants/Color";
 
-import { Input } from "@/components/base/Input";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { Modal } from "@/components/base/Modal";
 import { Button } from "@/components/base/Button";
 import { Tag } from "@/components/base/Tag";
 import { Toggle } from "@/components/base/Toggle";
-import { Checkable } from "@/components/base/Checkable";
+import { FormInput } from "@/components/Form/Input";
+import { FormPaymentSection } from "@/components/Form/PaymentSection";
 
-export function Search() {
+import { GetProductsParams } from "@/services/products";
+
+const searchSchema = z.object({
+  query: z.string().trim().optional(),
+  is_new: z.array(
+    z.enum(['new', 'used'])
+  ).min(1),
+  accept_trade: z.boolean(),
+  payment_methods: z.array(
+    z.enum(['pix', 'card', 'boleto', 'cash', 'deposit'])
+  ).min(1, { message: 'Selecione pelo menos uma forma de pagamento' })
+})
+
+type SearchParams = z.infer<typeof searchSchema>
+
+type Props = {
+  onSubmit: (params: GetProductsParams) => void
+}
+
+export function Search({ onSubmit }: Props) {
   const [showModal, setShowModal] = useState(false)
+
+  const { control, handleSubmit, reset } = useForm<SearchParams>({
+    defaultValues: {
+      query: '',
+      is_new: ['new', 'used'],
+      accept_trade: false,
+      payment_methods: ['pix', 'card', 'boleto', 'cash', 'deposit']
+    },
+    resolver: zodResolver(searchSchema),
+  })
+
+  function handleOnChangeTagValue(
+    key: 'new' | 'used',
+    val: boolean,
+    value: ('new' | 'used')[],
+    onChange: (val: ('new' | 'used')[]) => void
+  ) {
+    if (val && !value.includes(key)) {
+      onChange([...value, key])
+    }
+
+    if (!val && value.length > 1) {
+      onChange(value.filter(item => item !== key))
+    }
+  }
+
+  function handleFormSubmit(data: SearchParams) {
+    const is_new = data.is_new.length === 2
+      ? undefined
+      : data.is_new.includes('new')
+
+    onSubmit({
+      ...data,
+      accept_trade: data.accept_trade ? true : undefined,
+      is_new,
+    })
+    setShowModal(false)
+  }
 
   return (
     <>
-      <Input
+      <FormInput
+        control={control}
+        name="query"
         placeholder="Buscar anúncio"
+        onSubmitEditing={handleSubmit(handleFormSubmit)}
+        enterKeyHint="search"
       >
         <PressableIcon
           icon={MagnifyingGlass}
           size={20}
           stroke={Colors.gray[200]}
-
+          onPress={handleSubmit(handleFormSubmit)}
         />
 
         <View style={styles.divider} />
@@ -40,7 +104,7 @@ export function Search() {
           stroke={Colors.gray[200]}
           onPress={() => setShowModal(true)}
         />
-      </Input>
+      </FormInput>
 
       <Modal
         visible={showModal}
@@ -67,30 +131,50 @@ export function Search() {
               <Text style={styles.sectionTitle}>Condição</Text>
 
               <View style={styles.optsCondition}>
-                <Tag label="Novo" />
-                <Tag label="Usado" />
+                <Controller
+                  control={control}
+                  name="is_new"
+                  render={({ field: { value, onChange } }) => (
+                    <>
+                      <Tag
+                        label="Novo"
+                        value={value.includes('new')}
+                        onValueChange={(val) => handleOnChangeTagValue('new', val, value, onChange)}
+                      />
+                      <Tag
+                        label="Usado"
+                        value={value.includes('used')}
+                        onValueChange={(val) => handleOnChangeTagValue('used', val, value, onChange)}
+                      />
+                    </>
+                  )}
+                />
               </View>
-
             </View>
 
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Aceita troca?</Text>
 
-              <Toggle />
+              <Controller
+                control={control}
+                name="accept_trade"
+                render={({ field: { value, onChange } }) => (
+                  <Toggle
+                    value={value}
+                    onValueChange={onChange}
+                  />
+                )}
+              />
             </View>
 
             <View style={styles.section}>
               <Text style={styles.sectionTitle}>Meios de pagamento aceitos</Text>
 
-              <View style={styles.optsPayment}>
-                <Checkable label="Boleto" variant="checkbox" />
-                <Checkable label="Pix" variant="checkbox" />
-                <Checkable label="Dinheiro" variant="checkbox" />
-                <Checkable label="Cartão de Crédito" variant="checkbox" />
-                <Checkable label="Depósito Bancário" variant="checkbox" />
-              </View>
+              <FormPaymentSection
+                control={control}
+                name="payment_methods"
+              />
             </View>
-
           </View>
 
           <View style={styles.actions}>
@@ -98,11 +182,13 @@ export function Search() {
               title="Resetar filtros"
               variant="gray"
               style={styles.button}
+              onPress={() => reset()}
             />
             <Button
               title="Aplicar filtros"
               variant="black"
               style={styles.button}
+              onPress={handleSubmit(handleFormSubmit)}
             />
           </View>
 
@@ -164,10 +250,6 @@ const styles = StyleSheet.create({
 
   optsCondition: {
     flexDirection: 'row',
-    gap: 8
-  },
-
-  optsPayment: {
     gap: 8
   },
 

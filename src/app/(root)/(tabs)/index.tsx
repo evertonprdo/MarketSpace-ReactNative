@@ -10,7 +10,7 @@ import Fonts from "@/constants/Fonts";
 
 import { fmtValueToImageUriRequest } from "@/utils/dataTransform";
 
-import { Search } from "@/components/Search";
+import { Search } from "@/components/Form/Search";
 import { Button } from "@/components/base/Button";
 import { List, ListRequiredProps } from "@/components/List";
 import { InfoCard } from "@/components/InfoCard";
@@ -19,21 +19,24 @@ import type { UserDTO } from "@/dtos/userDTO";
 
 import { useAuth } from "@/hooks/useAuth";
 import { getProducts, GetProductsParams } from "@/services/products";
+import { storageUserProductInfoGet } from "@/storage/storageUserProducts";
 
 export default function Home() {
   const user = useAuth().user as UserDTO
 
   const [products, setProducts] = useState<ListRequiredProps[]>([])
   const [isFetchingData, setIsLoadingProducts] = useState(true)
+  const [activeAmount, setActiveAmount] = useState(0)
+
+  const [query, setQuery] = useState<GetProductsParams>({})
 
   const avatar = fmtValueToImageUriRequest(user?.avatar)
 
-  async function fetchProducts(params?: GetProductsParams) {
+  async function fetchProducts() {
     try {
       setIsLoadingProducts(true)
 
-      const data = await getProducts(params)
-
+      const data = await getProducts(query)
       setProducts(data)
 
     } catch (error) {
@@ -43,8 +46,22 @@ export default function Home() {
     }
   }
 
+  async function fetchUserProductsInfo() {
+    try {
+      const { activeProductsAmount } = await storageUserProductInfoGet()
+      setActiveAmount(activeProductsAmount)
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   useFocusEffect(useCallback(() => {
     fetchProducts()
+  }, [query]))
+
+  useFocusEffect(useCallback(() => {
+    fetchUserProductsInfo()
   }, []))
 
   return (
@@ -87,13 +104,15 @@ export default function Home() {
               Seus produtos anunciados para venda
             </Text>
 
-            <InfoCard count={4} onPress={() => router.navigate('/user-ads')} />
+            <InfoCard count={activeAmount} onPress={() => router.navigate('/user-ads')} />
           </View>
 
           <View style={styles.section}>
             <Text style={styles.sectionTitle}>Compre produtos variados</Text>
 
-            <Search />
+            <Search
+              onSubmit={setQuery}
+            />
           </View>
         </View>
       )}

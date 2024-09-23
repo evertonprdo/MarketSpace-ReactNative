@@ -1,41 +1,44 @@
-import { useRef, useState } from "react";
-import { router } from "expo-router";
+import { useCallback, useRef, useState } from "react";
+import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { ScrollView, StyleSheet, View } from "react-native";
 
-import { formatCentsToBRLCurrency, parseBRLCurrencyToCents } from "@/utils/dataTransform";
+import { fmtValueToImageUriRequest, formatCentsToBRLCurrency, parseBRLCurrencyToCents } from "@/utils/dataTransform";
 
 import ArrowLeft from "@/assets/icons/ArrowLeft";
 import Colors from "@/constants/Color";
 
 import { Header } from "@/components/Header";
-import { Details, ProductDetailsProps } from "@/components/Details";
 import { Button } from "@/components/base/Button";
 import { AdPreview } from "@/components/AdPreview";
+import { Loading } from "@/components/base/Loading";
 import { PressableIcon } from "@/components/base/PressableIcon";
 import { FormProduct, FormAdProps, FormAdRef } from "@/components/Form/Product";
+import { Details, PaymentNames, ProductDetailsProps } from "@/components/Details";
+
+import type { PaymentMethodsResponse, PostImageProps, PostProductRequest, ProductImageResponse } from "@/dtos/productsDTO";
+import type { UserDTO } from "@/dtos/userDTO";
+
+import { useAuth } from "@/hooks/useAuth";
+import { deleteProductImages, getProductById, postProductImages, putProduct } from "@/services/products";
+
+type ProductProps = {
+  images: PostImageProps[]
+} & PostProductRequest
 
 export default function EditAd() {
+  const params = useLocalSearchParams();
+  const productId = params.id as string
+
+  const auth = useAuth()
+  const user = auth.user as UserDTO
+
   const [showModal, setShowModal] = useState(false);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isFetchingProduct, setIsFetchingProduct] = useState(true)
+  const [isSending, setIsSending] = useState(false)
 
-  const [adDetails, setAdDetails] = useState<ProductDetailsProps>({
-    user: {
-      avatar: 'asda',
-      name: 'Maria Gomes'
-    },
-    images: testArray,
-    name: 'Tênis vermelho',
-    description: 'Cras congue cursus in tortor sagittis placerat nunc, tellus arcu. Vitae ante leo eget maecenas urna mattis cursus. ',
-    accept_trade: true,
-    is_new: true,
-    payment_methods: ['boleto', 'card', 'cash', 'deposit', 'pix'],
-    price: 15049
-  })
-
-  const initValues = {
-    ...adDetails,
-    price: formatCentsToBRLCurrency(adDetails.price)
-  }
+  const [serverImages, setServerImages] = useState<ProductImageResponse['product_images']>([])
+  const [product, setProduct] = useState({} as ProductProps)
+  const [preview, setPreview] = useState({} as ProductDetailsProps)
 
   const formAdRef = useRef<FormAdRef>(null)
 
@@ -48,17 +51,117 @@ export default function EditAd() {
   function handleNext(data: FormAdProps) {
     const { price, ...formData } = data
 
-    const parsedPrice = parseBRLCurrencyToCents(price)
+    const paymentArray: PaymentMethodsResponse['payment_methods'] = data.payment_methods.map(
+      paymentKeys => ({
+        key: paymentKeys,
+        name: PaymentNames[paymentKeys]
+      })
+    )
 
-    setAdDetails({
-      ...formData,
-      price: parsedPrice,
+    const prevImgArray = data.images.map(img => ({ uri: img.uri }))
+
+    setPreview({
+      ...data,
+      payment_methods: paymentArray,
+      images: prevImgArray,
       user: {
-        name: 'Maria Gomes',
-        avatar: 'asd'
+        avatar: fmtValueToImageUriRequest(user.avatar),
+        name: user.name
       }
     })
+
+    setProduct({
+      ...formData,
+      price: parseBRLCurrencyToCents(price),
+    })
+
     setShowModal(true)
+  }
+
+  async function fetchProduct() {
+    try {
+      setIsFetchingProduct(true)
+
+      const { product_images, user, price, payment_methods, ...data } = await getProductById(productId)
+
+      setServerImages(product_images.map(img => ({
+        id: img.id,
+        path: fmtValueToImageUriRequest(img.path)
+      })))
+
+      const images = product_images.map(img => ({
+        name: '_',
+        uri: fmtValueToImageUriRequest(img.path),
+        type: '_'
+      }))
+
+      const paymentArray = payment_methods.map(item => item.key)
+
+      setProduct({
+        ...data,
+        images,
+        price: price,
+        payment_methods: paymentArray
+      })
+
+    } catch (error: any) {
+      console.log(error)
+
+    } finally {
+      setIsFetchingProduct(false)
+    }
+  }
+
+  async function updateProduct() {
+    try {
+      setIsSending(true)
+
+      const oldImgPaths = serverImages.map(img => img.path)
+      const newImgUris = product.images.map(img => img.uri)
+
+      let dropImg: string[] = []
+      let postImg: PostImageProps[] = []
+
+      for (let i = 0; i < 3; i++) {
+        if (product.images[i] && !oldImgPaths.includes(product.images[i].uri)) {
+          postImg.push(product.images[i])
+        }
+
+        if (serverImages[i] && !newImgUris.includes(serverImages[i].path)) {
+          dropImg.push(serverImages[i].id)
+        }
+      }
+
+      if (postImg.length > 0) {
+        await postProductImages({
+          product_id: productId,
+          images: postImg
+        })
+      }
+
+      if (dropImg.length > 0) {
+        await deleteProductImages({ productImagesIds: dropImg })
+      }
+
+      await putProduct(productId, product)
+
+      router.dismissAll()
+
+    } catch (error) {
+      console.log(error)
+      setIsSending(false)
+    }
+  }
+
+  useFocusEffect(useCallback(() => {
+    fetchProduct()
+  }, []))
+
+  if (isFetchingProduct) return <Loading />
+
+  const initialValues = {
+    ...product,
+    price: formatCentsToBRLCurrency(product.price)
   }
 
   return (
@@ -83,7 +186,7 @@ export default function EditAd() {
         <FormProduct
           ref={formAdRef}
           onSubmit={handleNext}
-          initValues={initValues}
+          initValues={initialValues}
         />
 
       </ScrollView>
@@ -107,10 +210,11 @@ export default function EditAd() {
       <AdPreview
         visible={showModal}
         onCancel={() => setShowModal(false)}
-        onConfirm={() => setIsLoading(true)}
+        onConfirm={updateProduct}
+        isLoading={isSending}
       >
         <Details
-          product={adDetails}
+          product={preview}
           key={'ProductEditModal'}
         />
       </AdPreview>
@@ -137,9 +241,3 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.gray[700]
   },
 })
-
-const testArray = [
-  { name: '', type: '', uri: 'https://img.freepik.com/free-photo/colorful-design-with-spiral-design_188544-9588.jpg' },
-  { name: '', type: '', uri: 'https://images.pexels.com/photos/358457/pexels-photo-358457.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500' },
-  { name: '', type: '', uri: 'https://img-cdn.pixlr.com/image-generator/history/65ba5701b4f4f4419f746bc3/806ecb58-167c-4d20-b658-a6a6b2f221e9/medium.webp' }
-]
