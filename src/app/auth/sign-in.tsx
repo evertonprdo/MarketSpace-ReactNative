@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { router } from "expo-router";
 import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -12,20 +13,27 @@ import { Button } from "@/components/base/Button";
 import { FormSignIn, FormSignInProps } from "@/components/Form/SignIn";
 
 import { useAuth } from "@/hooks/useAuth";
-import { useState } from "react";
+import { useToast } from "@/hooks/useToast";
+import { AppError } from "@/utils/AppError";
 
 export default function SignIn() {
   const { signIn } = useAuth();
+  const Toast = useToast()
+
   const { height: WindowHeight } = useWindowDimensions();
   const [isLoading, setIsLoading] = useState(false)
 
   async function handleSignIn({ email, password }: FormSignInProps) {
     try {
       setIsLoading(true)
-      signIn(email, password)
+      await signIn(email, password)
 
     } catch (error) {
-      console.log(error)
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Não foi possível entrar. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       setIsLoading(false)
     }
   }

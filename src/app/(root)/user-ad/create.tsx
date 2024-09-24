@@ -18,6 +18,9 @@ import type { UserDTO } from "@/dtos/userDTO";
 import type { PaymentMethodsResponse, PostImageProps, PostProductRequest } from "@/dtos/productsDTO";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
+import { AppError } from "@/utils/AppError";
+
 import { postProduct, postProductImages } from "@/services/products";
 
 type ProductProps = {
@@ -27,6 +30,7 @@ type ProductProps = {
 export default function CreateAd() {
   const auth = useAuth()
   const user = auth.user as UserDTO
+  const Toast = useToast()
 
   const [showModal, setShowModal] = useState(false);
 
@@ -82,11 +86,19 @@ export default function CreateAd() {
         product_id: id,
         images: product.images
       })
+      
+      Toast.showToast('Anúncio criado com sucesso', 'green')
 
       router.dismissAll()
 
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Não foi possível cadastrar seu anúncio. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
+
       setIsLoading(false)
     }
   }

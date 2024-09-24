@@ -18,9 +18,12 @@ import { getUserProducts } from "@/services/users";
 
 import type { UserDTO } from "@/dtos/userDTO";
 import { storageUserProductInfoSave } from "@/storage/storageUserProducts";
+import { AppError } from "@/utils/AppError";
+import { useToast } from "@/hooks/useToast";
 
 export default function UserAds() {
   const user = useAuth().user as UserDTO
+  const Toast = useToast()
 
   const [prodCount, setProdCount] = useState({ all: 0, active: 0, inactive: 0 })
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
@@ -98,6 +101,11 @@ export default function UserAds() {
         activeProductsAmount
       })
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Não foi possível listar seus produtos, tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
     } finally {
       setIsLoadingProducts(false)

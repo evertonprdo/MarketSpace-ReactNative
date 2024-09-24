@@ -160,6 +160,7 @@ const styles = StyleSheet.create({
   },
 
   title: {
+    flex: 1,
     fontFamily: Fonts.FontFamily.bold,
     fontSize: Fonts.FontSize.xl,
     color: Colors.gray[100]

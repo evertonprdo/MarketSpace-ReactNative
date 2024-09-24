@@ -20,6 +20,8 @@ import type { UserDTO } from "@/dtos/userDTO";
 
 import { useAuth } from "@/hooks/useAuth";
 import { deleteProductImages, getProductById, postProductImages, putProduct } from "@/services/products";
+import { AppError } from "@/utils/AppError";
+import { useToast } from "@/hooks/useToast";
 
 type ProductProps = {
   images: PostImageProps[]
@@ -31,6 +33,7 @@ export default function EditAd() {
 
   const auth = useAuth()
   const user = auth.user as UserDTO
+  const Toast = useToast()
 
   const [showModal, setShowModal] = useState(false);
   const [isFetchingProduct, setIsFetchingProduct] = useState(true)
@@ -105,6 +108,11 @@ export default function EditAd() {
       })
 
     } catch (error: any) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Erro ao carregar produto. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
 
     } finally {
@@ -145,10 +153,18 @@ export default function EditAd() {
 
       await putProduct(productId, product)
 
+      Toast.showToast('Anúncio atualizado com sucesso', 'green')
+
       router.dismissAll()
 
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Erro ao atualizar o anúncio. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
+
       setIsSending(false)
     }
   }

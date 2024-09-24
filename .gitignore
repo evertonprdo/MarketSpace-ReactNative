@@ -3,6 +3,9 @@
 # dependencies
 node_modules/
 
+# Local files
+productsToPost/
+
 # Expo
 .expo/
 dist/

@@ -86,7 +86,11 @@ export function AdCard({ onPress, is_new, isProductActive, style, avatar, name, 
       </View>
 
       <View style={styles.details}>
-        <Text style={[styles.title, { color: descText[0] }]}>
+        <Text
+          style={[styles.title, { color: descText[0] }]}
+          numberOfLines={1}
+          ellipsizeMode="tail"
+        >
           {name}
         </Text>
 

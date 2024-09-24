@@ -18,10 +18,14 @@ import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dat
 import { getProductById } from "@/services/products";
 import { Modal } from "@/components/base/Modal";
 import { MessageBox } from "@/components/MessageBox";
+import { AppError } from "@/utils/AppError";
+import { useToast } from "@/hooks/useToast";
 
 export default function AdDetails() {
   const params = useLocalSearchParams();
   const productId = params['product-id'] as string
+
+  const Toast = useToast()
 
   const [product, setProduct] = useState<ProductDetailsProps & { user: { tel: string } }>()
   const [isFetchingProduct, setIsFetchingProduct] = useState(true)
@@ -48,6 +52,11 @@ export default function AdDetails() {
       })
 
     } catch (error: any) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Erro ao carregar produto. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
 
     } finally {

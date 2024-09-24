@@ -19,6 +19,8 @@ import { Header } from "@/components/Header";
 
 import { fmtValueToImageUriRequest, formatCentsToBRLCurrency } from "@/utils/dataTransform";
 import { deleteProduct, getProductById, patchProductActiveStatus } from "@/services/products";
+import { AppError } from "@/utils/AppError";
+import { useToast } from "@/hooks/useToast";
 
 enum MODAL {
   NONE = 0,
@@ -29,6 +31,8 @@ enum MODAL {
 export default function UserAdDetails() {
   const params = useLocalSearchParams();
   const productId = params.id as string
+
+  const Toast = useToast()
 
   const [product, setProduct] = useState<ProductDetailsProps>()
   const [isFetchingProduct, setIsFetchingProduct] = useState(true)
@@ -41,7 +45,14 @@ export default function UserAdDetails() {
 
       fetchProduct();
 
+      Toast.showToast('Anúncio atualizado com sucesso', 'green')
+
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Não foi possível atualizar o produto, tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
     } finally {
       setShowModal(MODAL.NONE)
@@ -68,8 +79,12 @@ export default function UserAdDetails() {
       })
 
     } catch (error: any) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Erro ao carregar produto. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
-
     } finally {
       setIsFetchingProduct(false)
     }
@@ -78,9 +93,17 @@ export default function UserAdDetails() {
   async function handleDeleteProduct() {
     try {
       await deleteProduct(productId)
+
+      Toast.showToast('Anúncio removido com sucesso', 'green')
+
       router.dismissAll()
 
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Não foi possível excluir o anúncio. tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
       setShowModal(MODAL.NONE)
     }

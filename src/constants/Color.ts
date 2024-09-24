@@ -2,7 +2,10 @@ const Colors = {
   blue: "#364D9D",
   blueLight: "#647AC7",
 
+  red: "#EF4444",
   redLight: "#EE7979",
+
+  green: '#16a34a',
 
   gray: {
     100: "#1A181B",

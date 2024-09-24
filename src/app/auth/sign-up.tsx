@@ -13,10 +13,14 @@ import { FormSignUp, FormSignUpProps } from "@/components/Form/SignUp";
 import { Alert } from "@/components/base/Alert";
 
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
+import { AppError } from "@/utils/AppError";
+
 import { postUser } from "@/services/users";
 
 export default function SignUp() {
   const { signIn } = useAuth()
+  const Toast = useToast()
 
   const [warning, setWarning] = useState({
     title: '',
@@ -57,6 +61,11 @@ export default function SignUp() {
       await signIn(data.email, data.password)
 
     } catch (error) {
+      const isAppError = error instanceof AppError
+      
+      const title = isAppError ? error.message : "Erro ao cadastrar sua conta, tente novamente mais tarde."
+      
+      Toast.showToast(title, 'red')
       console.log(error)
       setIsLoading(false)
     }
@@ -86,7 +95,11 @@ export default function SignUp() {
 
       <View style={styles.section}>
         <Text style={styles.text}>Já tem uma conta?</Text>
-        <Button title="Ir para o login" variant="gray" onPress={() => router.back()} />
+        <Button
+          title="Ir para o login"
+          variant="gray"
+          onPress={() => router.back()}
+        />
       </View>
 
       <Alert

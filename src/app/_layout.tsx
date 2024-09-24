@@ -1,17 +1,20 @@
 import { Slot } from "expo-router";
 import { StyleSheet, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 import { Karla_400Regular, Karla_700Bold, useFonts } from "@expo-google-fonts/karla";
 
 import Colors from "@/constants/Color";
 
+import { Loading } from "@/components/base/Loading";
+
 import { AuthContextProvider } from "@/contexts/AuthContext";
-import { StatusBar } from "expo-status-bar";
+import { ToastProvider } from "@/contexts/ToastContext";
 
 export default function AppLayout() {
   const [fontsLoaded] = useFonts({ Karla_400Regular, Karla_700Bold })
 
-  if (!fontsLoaded) return null
+  if (!fontsLoaded) return <Loading />
 
   return (
     <SafeAreaProvider>
@@ -23,7 +26,9 @@ export default function AppLayout() {
             backgroundColor="transparent"
             translucent
           />
-          <Slot />
+          <ToastProvider>
+            <Slot />
+          </ToastProvider>
         </View>
 
       </AuthContextProvider>

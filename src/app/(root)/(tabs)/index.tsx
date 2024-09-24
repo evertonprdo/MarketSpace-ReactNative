@@ -18,11 +18,15 @@ import { InfoCard } from "@/components/InfoCard";
 import type { UserDTO } from "@/dtos/userDTO";
 
 import { useAuth } from "@/hooks/useAuth";
-import { getProducts, GetProductsParams } from "@/services/products";
+import { useToast } from "@/hooks/useToast";
+import { AppError } from "@/utils/AppError";
+
 import { storageUserProductInfoGet } from "@/storage/storageUserProducts";
+import { getProducts, GetProductsParams } from "@/services/products";
 
 export default function Home() {
   const user = useAuth().user as UserDTO
+  const Toast = useToast()
 
   const [products, setProducts] = useState<ListRequiredProps[]>([])
   const [isFetchingData, setIsLoadingProducts] = useState(true)
@@ -40,6 +44,11 @@ export default function Home() {
       setProducts(data)
 
     } catch (error) {
+      const isAppError = error instanceof AppError
+
+      const title = isAppError ? error.message : "Erro ao listar produtos. tente novamente mais tarde."
+
+      Toast.showToast(title, 'red')
       console.log(error)
     } finally {
       setIsLoadingProducts(false)
@@ -83,7 +92,8 @@ export default function Home() {
                 style={styles.avatar}
               />
 
-              <Text style={styles.welcomeText}>Boas vindas,{" \n"}
+              <Text style={styles.welcomeText} numberOfLines={2} ellipsizeMode="clip">
+                Boas vindas,{" \n"}
                 <Text style={styles.welcomeBold}>
                   {user?.name}!
                 </Text>
@@ -144,6 +154,7 @@ const styles = StyleSheet.create({
   },
 
   welcomeText: {
+    flex: 1,
     fontFamily: Fonts.FontFamily.regular,
     fontSize: Fonts.FontSize.lg,
     color: Colors.gray[100],

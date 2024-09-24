@@ -5,7 +5,7 @@ export function useAuth() {
   const auth = useContext(AuthContext);
 
   if (!auth) {
-    throw new Error('useAuth must be wrapped in a <SessionProvider />');
+    throw new Error('useAuth must be wrapped in a <AuthContextProvider />');
   }
 
   return auth;
