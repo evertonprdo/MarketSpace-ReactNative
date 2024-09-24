@@ -5,6 +5,7 @@ Welcome to **MarketSpace**, a product marketplace app developed as part of Rocke
 ## Project Demonstration
 
 [![Demonstration](https://img.youtube.com/vi/OlynaLj62Ug/0.jpg)](https://www.youtube.com/watch?v=OlynaLj62Ug)
+
 Check out a full video demonstration of the app in action: [YouTube - MarketSpace App Demo](https://www.youtube.com/watch?v=OlynaLj62Ug)
 
 ## About the Challenge
