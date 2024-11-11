@@ -57,7 +57,7 @@ This project was built using the following technologies:
 - **React Hook** Form for form handling
 - **Zod** for schema validation
 - **Expo Image Picker** for handling image uploads
-- **React Navigation** for navigation
+- **Expo Router** for navigation
 - **React Native Reanimated** Carousel for product image carousels
 - **Expo File System** for file management
 - **React Native Toast Message** for notifications
